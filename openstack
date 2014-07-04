@@ -1,0 +1,3100 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Bugs : OpenStack</title>
+    <link rel="shortcut icon" href="/@@/launchpad.png" />
+    
+    
+      <link rel="alternate" type="application/atom+xml"
+            href="http://feeds.launchpad.net/openstack/latest-bugs.atom"
+            title="Latest Bugs for OpenStack" />
+    
+
+    
+  
+  <link type="text/css" rel="stylesheet"
+        media="screen, print"
+        href="/+icing/rev17082/combo.css" />
+
+
+    
+
+    
+      <meta name="description"
+            content="Website - http://openstack.org
+Wiki - http://wiki.openstack.org
+Blogs - http://planet.openstack.org/
+Mailing list - ... - see https://lists.openstack.org/cgi-bin/mailman/listinfo/openstack to join.
+Code Review - https://review.openstack.org/
+IRC - #openstack on freenode.net
+Documentation - http://docs.openstack.org" />
+    
+
+    
+  
+
+  
+  
+  <script type="text/javascript">
+    var LP = {
+        cache: {},
+        links: {}
+    };
+  </script>
+
+  
+
+  <script type="text/javascript">var cookie_scope = '; Path=/; Secure; Domain=.launchpad.net';</script>
+
+   <script type="text/javascript"
+           src="/+combo/rev17082/?yui/yui/yui-min.js&amp;lp/meta.js&amp;yui/loader/loader-min.js"></script>
+   <script type="text/javascript">
+        var raw = null;
+        if (LP.devmode) {
+           raw = 'raw';
+        }
+        YUI.GlobalConfig = {
+            combine: true,
+            comboBase: '/+combo/rev17082/?',
+            root: 'yui/',
+            filter: raw,
+            debug: false,
+            fetchCSS: false,
+            maxURLLength: 2000,
+            groups: {
+                lp: {
+                    combine: true,
+                    base: '/+combo/rev17082/?lp/',
+                    comboBase: '/+combo/rev17082/?',
+                    root: 'lp/',
+                    // comes from including lp/meta.js
+                    modules: LP_MODULES,
+                    fetchCSS: false
+                }
+            }
+        }</script>
+
+  <script type="text/javascript">
+      // we need this to create a single YUI instance all events and code
+      // talks across. All instances of YUI().use should be based off of
+      // LPJS instead.
+      LPJS = new YUI();
+  </script>
+
+
+
+    <script id="base-layout-load-scripts" type="text/javascript">
+        //<![CDATA[
+        LPJS.use('base', 'node', 'console', 'event',
+            'oop', 'lp', 'lp.app.foldables','lp.app.sorttable',
+            'lp.app.inlinehelp', 'lp.app.links', 'lp.app.longpoll',
+            'lp.bugs.bugtask_index', 'lp.bugs.subscribers',
+            'lp.app.ellipsis', 'lp.code.branchmergeproposal.diff',
+            'lp.views.global',
+             function(Y) {
+
+            Y.on("domready", function () {
+                var global_view = new Y.lp.views.Global();
+                global_view.render();
+
+                Y.lp.app.sorttable.SortTable.init();
+                Y.lp.app.inlinehelp.init_help();
+                Y.lp.activate_collapsibles();
+                Y.lp.app.foldables.activate();
+                Y.lp.app.links.check_valid_lp_links();
+                // Longpolling will only start if
+                // LP.cache.longpoll is populated.
+                // We use Y.later to work around a Safari/Chrome 'feature':
+                // The mouse cursor stays 'busy' until all the requests started during
+                // page load are finished.  Hence we want the long poll request to start
+                // right *after* the page has loaded.
+                Y.later(0, Y.lp.app.longpoll, Y.lp.app.longpoll.setupLongPollManager);
+
+            });
+
+            Y.on('lp:context:web_link:changed', function(e) {
+                  window.location = e.new_value;
+            });
+        });
+        //]]>
+    </script>
+    <script id="base-helper-functions" type="text/javascript">
+         //<![CDATA[
+        // This code is pulled from lp.js that needs to be available on every
+        // request. Pulling here to get it outside the scope of the YUI block.
+        function setFocusByName(name) {
+            // Focus the first element matching the given name which can be focused.
+            var nodes = document.getElementsByName(name);
+            var i, node;
+            for (i = 0; i < nodes.length; i++) {
+                node = nodes[i];
+                if (node.focus) {
+                    try {
+                        // Trying to focus a hidden element throws an error in IE8.
+                        if (node.offsetHeight !== 0) {
+                            node.focus();
+                        }
+                    } catch (e) {
+                        LPJS.use('console', function(Y) {
+                            Y.log('In setFocusByName(<' +
+                                node.tagName + ' type=' + node.type + '>): ' + e);
+                        });
+                    }
+                    break;
+                }
+            }
+        }
+
+        function selectWidget(widget_name, event) {
+          if (event && (event.keyCode === 9 || event.keyCode === 13)) {
+              // Avoid firing if user is tabbing through or simply pressing
+              // enter to submit the form.
+              return;
+          }
+          document.getElementById(widget_name).checked = true;
+        }
+        //]]>
+    </script>
+
+    
+      
+
+
+
+<script type="text/javascript">
+    LPJS.use('lp.registry.structural_subscription', function(Y) {
+        Y.on('domready', function() {
+            Y.lp.registry.structural_subscription.setup(
+                {content_box: "#structural-subscription-content-box"});
+        });
+    });
+  </script>
+  
+  <script type="text/javascript">
+    LPJS.use('lp.bugs.buglisting', function(Y) {
+        Y.on('domready', function() {
+            var view = new Y.lp.bugs.buglisting.TableView({
+                active_sort_key: LP.cache.order_by,
+                sort_keys: LP.cache.sort_keys
+            });
+            view.render();
+        })
+    });
+  </script>
+
+
+    
+  </head>
+
+  <body id="document" itemscope=""
+        itemtype="http://schema.org/WebPage"
+        class="tab-bugs
+      main_side
+      public
+      yui3-skin-sam">
+          
+          
+        <script type="text/javascript">
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', 'UA-12833497-1']);
+          _gaq.push(['_setDomainName', '.launchpad.net']);
+          _gaq.push(['_setAllowHash', false]);
+          _gaq.push(['_trackPageview']);
+        </script>
+        <script type="text/javascript"
+                src="https://launchpad.net/+icing/rev17082/google-analytics/ga.js"></script>
+    <div class="yui-d0">
+      <div id="locationbar" class="login-logout">
+        
+
+<div id="logincontrol"><a href="https://bugs.launchpad.net/openstack/+login">Log in / Register</a></div>
+
+
+
+      </div><!--id="locationbar"-->
+
+      <div id="watermark" class="watermark-apps-portlet">
+        <div>
+          <img alt="" width="64" height="64" src="https://launchpadlibrarian.net/52042558/os64.png" />
+        </div>
+        <div class="wide">
+          <h2>OpenStack</h2>
+          
+  <!-- Application Menu -->
+  <ul class="facetmenu">
+    
+      
+      <li class="overview"><a
+    href="https://launchpad.net/openstack">Overview</a></li>
+      
+    
+    
+      
+      <li class="branches"><a
+    href="https://code.launchpad.net/openstack">Code</a></li>
+      
+    
+    
+      <li class="bugs active"><span>Bugs</span></li>
+      
+      
+    
+    
+      
+      <li class="specifications"><a
+    href="https://blueprints.launchpad.net/openstack">Blueprints</a></li>
+      
+    
+    
+      
+      <li class="translations"><a
+    href="https://translations.launchpad.net/openstack">Translations</a></li>
+      
+    
+    
+      
+      <li class="answers"><a href="https://answers.launchpad.net/openstack">Answers</a></li>
+      
+    
+  </ul>
+
+        </div>
+      </div>
+
+      <div class="yui-t4">
+        <div id="maincontent" class="yui-main">
+          <div class="yui-b" dir="ltr">
+            <div class="context-publication">
+              <h1>Bugs : OpenStack</h1>
+              <ol itemprop="breadcrumb" class="breadcrumbs">
+
+
+  <li>
+    <a href="https://launchpad.net/openstack">OpenStack</a>
+  </li>
+
+
+  <li>
+    Bugs
+  </li>
+
+</ol>
+
+              <div id="registration" class="registering">
+                
+              </div>
+            </div>
+
+            
+            <div id="request-notifications">
+              
+            </div>
+
+            
+              <div>
+    
+    <div class="top-portlet">
+      
+        
+
+        
+          
+        
+      
+
+      
+        
+          <div>
+            
+<div id="bugs-search-form" class="dynamic_bug_listing"
+     action="">
+  <form method="get" name="search"
+        class="primary search dynamic_bug_listing" action="">
+    <h3>Search bugs in OpenStack</h3>
+    <p>
+    <input class="textType" id="field.searchtext" name="field.searchtext" size="20" type="text" value=""  />
+    <input type="submit" name="search" value="Search" />
+    <input class="hiddenType" id="field.status" name="field.status:list" type="hidden" value="NEW"  />
+<input class="hiddenType" id="field.status" name="field.status:list" type="hidden" value="INCOMPLETE_WITH_RESPONSE"  />
+<input class="hiddenType" id="field.status" name="field.status:list" type="hidden" value="INCOMPLETE_WITHOUT_RESPONSE"  />
+<input class="hiddenType" id="field.status" name="field.status:list" type="hidden" value="CONFIRMED"  />
+<input class="hiddenType" id="field.status" name="field.status:list" type="hidden" value="TRIAGED"  />
+<input class="hiddenType" id="field.status" name="field.status:list" type="hidden" value="INPROGRESS"  />
+<input class="hiddenType" id="field.status" name="field.status:list" type="hidden" value="FIXCOMMITTED"  />
+    
+    <input class="hiddenType" id="field.assignee" name="field.assignee" type="hidden" value=""  />
+    <input class="hiddenType" id="field.bug_reporter" name="field.bug_reporter" type="hidden" value=""  />
+    
+    <input class="hiddenType" id="field.omit_dupes" name="field.omit_dupes" type="hidden" value="on"  />
+    <input class="hiddenType" id="field.has_patch" name="field.has_patch" type="hidden" value=""  />
+    
+    <input class="hiddenType" id="field.has_no_package" name="field.has_no_package" type="hidden" value=""  />
+    </p>
+    <p>
+    <a href="?advanced=1">Advanced search</a>
+    </p>
+
+    
+  
+
+
+    
+
+    <div>
+    </div>
+  </form>
+</div>
+
+
+            <div id="bugs-table-listing">
+  
+
+  
+    <div class="lesser"><table style="width: 100%;" class="upper-batch-nav">
+  <tbody>
+    <tr>
+      <td style="white-space: nowrap" class="batch-navigation-index">
+        
+            <strong>1</strong>
+            
+              &rarr;
+              <strong>75</strong>
+            
+            of
+            8505
+            results
+        
+      </td>
+      <td style="text-align: right; white-space: nowrap" class="batch-navigation-links">
+        
+        <span class="first inactive">First</span>
+        &bull;
+        
+        <span class="previous inactive">Previous</span>
+        &bull;
+        <a class="next" rel="next"
+           href="https://bugs.launchpad.net/openstack/+bugs?memo=75&amp;start=75"
+           id="upper-batch-nav-batchnav-next"><strong>Next</strong></a>
+        
+        
+          &bull;
+          <a class="last" rel="last"
+             href="https://bugs.launchpad.net/openstack/+bugs?direction=backwards&amp;start=8475"
+             id="upper-batch-nav-batchnav-last">Last</a>
+          
+        
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+    
+        <div id="bugs-orderby"></div>
+        <div id="client-listing"><div class="listing">
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusINPROGRESS">
+            In Progress
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1010621</span>
+            <a href="https://bugs.launchpad.net/openstack-ci/+bug/1010621" class="bugtitle">important servers should have backups</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    OpenStack Core Infrastructure
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">8</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/openstack-ci/+milestone/icehouse" alt="milestone icehouse" title="Linked to milestone icehouse" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1028684</span>
+            <a href="https://bugs.launchpad.net/python-cinderclient/+bug/1028684" class="bugtitle">Missing body parameters in volume create function</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    python-cinderclient
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">12</span>
+                </span>
+            <span class="bug-related-icons">
+                
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1180439</span>
+            <a href="https://bugs.launchpad.net/python-ceilometerclient/+bug/1180439" class="bugtitle">mis-scoped Client class breaks CLI</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    python-ceilometerclient
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusCONFIRMED">
+            Confirmed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1184013</span>
+            <a href="https://bugs.launchpad.net/anvil/+bug/1184013" class="bugtitle">fix-char-dev-permissions</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    anvil
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusCONFIRMED">
+            Confirmed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1191447</span>
+            <a href="https://bugs.launchpad.net/openstack-manuals/+bug/1191447" class="bugtitle">Clearly mark outdated doc pages</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    openstack-manuals
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">52</span>
+                </span>
+            <span class="bug-related-icons">
+                <span alt="blueprint" title="Related to a blueprint" class="sprite blueprint"></span> <a href="https://launchpad.net/openstack-manuals/+milestone/juno" alt="milestone juno" title="Linked to milestone juno" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1209364</span>
+            <a href="https://bugs.launchpad.net/python-neutronclient/+bug/1209364" class="bugtitle"> AttributeError: 'MockClient' object has no attribute 'EXTED_PLURALS' </a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    python-neutronclient
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/python-neutronclient/+milestone/2.2.1" alt="milestone 2.2.1" title="Linked to milestone 2.2.1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1210912</span>
+            <a href="https://bugs.launchpad.net/pbr/+bug/1210912" class="bugtitle">requirements.txt install fails on Windows </a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    PBR
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusINPROGRESS">
+            In Progress
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1242569</span>
+            <a href="https://bugs.launchpad.net/openstack-ci/+bug/1242569" class="bugtitle">manage-projects error on new project creation</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    OpenStack Core Infrastructure
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">58</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/openstack-ci/+milestone/icehouse" alt="milestone icehouse" title="Linked to milestone icehouse" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusCONFIRMED">
+            Confirmed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1253896</span>
+            <a href="https://bugs.launchpad.net/tempest/+bug/1253896" class="bugtitle">Attempts to verify guests are running via SSH fails. SSH connection to guest does not work.</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    tempest
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">204</span>
+                </span>
+            <span class="bug-related-icons">
+                <span alt="blueprint" title="Related to a blueprint" class="sprite blueprint"></span> <a href="https://launchpad.net/tempest/+milestone/havana-stable" alt="milestone havana-stable" title="Linked to milestone havana-stable" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusINPROGRESS">
+            In Progress
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#856764</span>
+            <a href="https://bugs.launchpad.net/oslo.messaging/+bug/856764" class="bugtitle">RabbitMQ connections lack heartbeat or TCP keepalives</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    oslo.messaging
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">134</span>
+                </span>
+            <span class="bug-related-icons">
+                <span alt="haspatch" title="Has a patch" class="sprite haspatch-icon"></span>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusINPROGRESS">
+            In Progress
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1263294</span>
+            <a href="https://bugs.launchpad.net/tripleo/+bug/1263294" class="bugtitle">ephemeral0 of /dev/sda1 triggers 'did not find entry for sda1 in /sys/block'</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    tripleo
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">14</span>
+                </span>
+            <span class="bug-related-icons">
+                
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusINPROGRESS">
+            In Progress
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1266513</span>
+            <a href="https://bugs.launchpad.net/openstack-ci/+bug/1266513" class="bugtitle">Some Python requirements are not hosted on PyPI</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    OpenStack Core Infrastructure
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">44</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/openstack-ci/+milestone/icehouse" alt="milestone icehouse" title="Linked to milestone icehouse" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusCONFIRMED">
+            Confirmed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1273754</span>
+            <a href="https://bugs.launchpad.net/openstack-chef/+bug/1273754" class="bugtitle">[network] Subsequent database migrations fail</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    OpenStack + Chef
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">14</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/openstack-chef/+milestone/icehouse-rc1" alt="milestone icehouse-rc1" title="Linked to milestone icehouse-rc1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusINPROGRESS">
+            In Progress
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1274135</span>
+            <a href="https://bugs.launchpad.net/openstack-ci/+bug/1274135" class="bugtitle">infrastructure-wide issues with tox 1.7.0</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    OpenStack Core Infrastructure
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">110</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/openstack-ci/+milestone/icehouse" alt="milestone icehouse" title="Linked to milestone icehouse" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusINCOMPLETE">
+            Incomplete
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1275754</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1275754" class="bugtitle">HA deployment has failed on 3-rd controller with error: Timeout of deployment is exceeded (GRE Latency)</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">10</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.1" alt="milestone 5.1" title="Linked to milestone 5.1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1281487</span>
+            <a href="https://bugs.launchpad.net/blazar/+bug/1281487" class="bugtitle">Climate not working with Keystone Client 0.6.0 or higher</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Blazar
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/blazar/+milestone/0.1.1" alt="milestone 0.1.1" title="Linked to milestone 0.1.1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1281521</span>
+            <a href="https://bugs.launchpad.net/blazar/+bug/1281521" class="bugtitle">Climate is not working with oslo.messaging 1.3.0.a7 or higher</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Blazar
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/blazar/+milestone/0.1.1" alt="milestone 0.1.1" title="Linked to milestone 0.1.1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1284675</span>
+            <a href="https://bugs.launchpad.net/blazar/+bug/1284675" class="bugtitle">Reworking configuration options broke devstack</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Blazar
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/blazar/+milestone/0.1.1" alt="milestone 0.1.1" title="Linked to milestone 0.1.1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1287542</span>
+            <a href="https://bugs.launchpad.net/blazar/+bug/1287542" class="bugtitle">Error importing module nova.openstack.common.sslutils: duplicate option: ca_file</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Blazar
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">30</span>
+                </span>
+            <span class="bug-related-icons">
+                
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusINPROGRESS">
+            In Progress
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1294789</span>
+            <a href="https://bugs.launchpad.net/ceilometer/+bug/1294789" class="bugtitle">ceilometer swift module is spamming rsyslog with useless logs</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Ceilometer
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">14</span>
+                </span>
+            <span class="bug-related-icons">
+                
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1298472</span>
+            <a href="https://bugs.launchpad.net/tempest/+bug/1298472" class="bugtitle">SSHTimeout in tempest scenario tests using nova-network</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    tempest
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">82</span>
+                </span>
+            <span class="bug-related-icons">
+                
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1299517</span>
+            <a href="https://bugs.launchpad.net/nova/+bug/1299517" class="bugtitle"> quota-class-update</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    OpenStack Compute (nova)
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">18</span>
+                </span>
+            <span class="bug-related-icons">
+                
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusINPROGRESS">
+            In Progress
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1302189</span>
+            <a href="https://bugs.launchpad.net/openstack-sdk-php/+bug/1302189" class="bugtitle">stream wrapper only works for default region</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    OpenStack-SDK-PHP
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1303460</span>
+            <a href="https://bugs.launchpad.net/cinder/+bug/1303460" class="bugtitle">BrcdFCSanLookupService doesn't handle more than 1 switch</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Cinder
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/cinder/+milestone/juno-2" alt="milestone juno-2" title="Linked to milestone juno-2" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1306029</span>
+            <a href="https://bugs.launchpad.net/heat/+bug/1306029" class="bugtitle">tempest.api.orchestration.stacks.test_stacks times out during tearDownClass</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    heat
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">10</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/heat/+milestone/juno-2" alt="milestone juno-2" title="Linked to milestone juno-2" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusINPROGRESS">
+            In Progress
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1308318</span>
+            <a href="https://bugs.launchpad.net/cinder/+bug/1308318" class="bugtitle">Zone manager removes zoning when there are still volumes attached</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Cinder
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">18</span>
+                </span>
+            <span class="bug-related-icons">
+                
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusTRIAGED">
+            Triaged
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1308407</span>
+            <a href="https://bugs.launchpad.net/tripleo/+bug/1308407" class="bugtitle">Nodepool favouring precise nodes over f20</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    tripleo
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">12</span>
+                </span>
+            <span class="bug-related-icons">
+                
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusINPROGRESS">
+            In Progress
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1308684</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1308684" class="bugtitle">Ubuntu logs are incomplete in snapshot</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">14</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.1" alt="milestone 5.1" title="Linked to milestone 5.1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1309087</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1309087" class="bugtitle">Instances do not boot sucessfully on Ubuntu neutron</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.0" alt="milestone 5.0" title="Linked to milestone 5.0" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusINPROGRESS">
+            In Progress
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1310494</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1310494" class="bugtitle">Run additional controllers in parallel</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.1" alt="milestone 5.1" title="Linked to milestone 5.1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1312212</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1312212" class="bugtitle">mysql reconnect does not catch 1047 errors</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.0" alt="milestone 5.0" title="Linked to milestone 5.0" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1312614</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1312614" class="bugtitle">neutron nova notify service tenant id is missing on the primary controller</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.0" alt="milestone 5.0" title="Linked to milestone 5.0" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1312645</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1312645" class="bugtitle">outdated websockify package at least in Ubuntu</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.0" alt="milestone 5.0" title="Linked to milestone 5.0" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1314194</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1314194" class="bugtitle">Missing documentation: repo for docker (4.4. Building the Fuel ISO)</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">10</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.0" alt="milestone 5.0" title="Linked to milestone 5.0" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusINPROGRESS">
+            In Progress
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1316985</span>
+            <a href="https://bugs.launchpad.net/tripleo/+bug/1316985" class="bugtitle">set -eu may spuriously break dkms module</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    tripleo
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusTRIAGED">
+            Triaged
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1317056</span>
+            <a href="https://bugs.launchpad.net/tripleo/+bug/1317056" class="bugtitle">Guest VM FS corruption after compute host reboot</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    tripleo
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1317606</span>
+            <a href="https://bugs.launchpad.net/cinder/+bug/1317606" class="bugtitle">The call to add_admin_meta to view in list volumes takes incredibly long </a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Cinder
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">8</span>
+                </span>
+            <span class="bug-related-icons">
+                
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1317647</span>
+            <a href="https://bugs.launchpad.net/ironic/+bug/1317647" class="bugtitle">disk volume labels on conductor can conflict with nodes disk labels</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Ironic
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/ironic/+milestone/juno-2" alt="milestone juno-2" title="Linked to milestone juno-2" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1319018</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1319018" class="bugtitle">Docker upgrade script crashes</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">8</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.0" alt="milestone 5.0" title="Linked to milestone 5.0" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1319076</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1319076" class="bugtitle">supervisorctl restarts docker containers</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.0" alt="milestone 5.0" title="Linked to milestone 5.0" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1319139</span>
+            <a href="https://bugs.launchpad.net/designate/+bug/1319139" class="bugtitle">DevStack docs point to moniker-dns github repo</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Designate
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/designate/+milestone/juno-1" alt="milestone juno-1" title="Linked to milestone juno-1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1319344</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1319344" class="bugtitle">Reduce time of bootstrapping of master node</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.1" alt="milestone 5.1" title="Linked to milestone 5.1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1319412</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1319412" class="bugtitle">Wrong interface in dnsmasq.conf inside cobbler container</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.0" alt="milestone 5.0" title="Linked to milestone 5.0" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1321381</span>
+            <a href="https://bugs.launchpad.net/nova/+bug/1321381" class="bugtitle">VMware: Ports are not cleaned up after reschedule</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    OpenStack Compute (nova)
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/nova/+milestone/juno-2" alt="milestone juno-2" title="Linked to milestone juno-2" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1321662</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1321662" class="bugtitle">Deploy HA with Nova on primary controller failed</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.0.1" alt="milestone 5.0.1" title="Linked to milestone 5.0.1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusINPROGRESS">
+            In Progress
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1321798</span>
+            <a href="https://bugs.launchpad.net/cinder/+bug/1321798" class="bugtitle">fc auto zoning did not work when create volume from image</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Cinder
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">18</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/cinder/+milestone/juno-2" alt="milestone juno-2" title="Linked to milestone juno-2" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1321873</span>
+            <a href="https://bugs.launchpad.net/designate/+bug/1321873" class="bugtitle">Indeterminate gate failure &quot;KeyError: 'id'&quot; in NeutronFloatingHandlerTest</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Designate
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">8</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/designate/+milestone/juno-1" alt="milestone juno-1" title="Linked to milestone juno-1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1322259</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1322259" class="bugtitle">Openstack cluster do not work after failover  of  primary controller</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">14</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.0" alt="milestone 5.0" title="Linked to milestone 5.0" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1322502</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1322502" class="bugtitle">Unsupported hardware message blocks Fuel install</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.0" alt="milestone 5.0" title="Linked to milestone 5.0" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1322078</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1322078" class="bugtitle">Message ID missed in execution result during AD deployment</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.0" alt="milestone 5.0" title="Linked to milestone 5.0" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1323158</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1323158" class="bugtitle">Create template specs for Fuel</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.1" alt="milestone 5.1" title="Linked to milestone 5.1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusCONFIRMED">
+            Confirmed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1323277</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1323277" class="bugtitle">vip__management recovered with error</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">22</span>
+                </span>
+            <span class="bug-related-icons">
+                <span alt="blueprint" title="Related to a blueprint" class="sprite blueprint"></span> <a href="https://launchpad.net/fuel/+milestone/5.1" alt="milestone 5.1" title="Linked to milestone 5.1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1323350</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1323350" class="bugtitle">./manage.py dropdb doesn't work in case of changed schema</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.1" alt="milestone 5.1" title="Linked to milestone 5.1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1323354</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1323354" class="bugtitle">bootstrap image is missing some firmware files </a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">36</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.0.1" alt="milestone 5.0.1" title="Linked to milestone 5.0.1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1323355</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1323355" class="bugtitle">document how to use bootstrap image with 2.6.32 kernel</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.0" alt="milestone 5.0" title="Linked to milestone 5.0" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1323433</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1323433" class="bugtitle">OSTF provides wrong failure message for ping probes</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">8</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.0" alt="milestone 5.0" title="Linked to milestone 5.0" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1323436</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1323436" class="bugtitle">Diagnostic snapshot missing many log files</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">8</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.0" alt="milestone 5.0" title="Linked to milestone 5.0" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusCONFIRMED">
+            Confirmed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1308523</span>
+            <a href="https://bugs.launchpad.net/openstack-manuals/+bug/1308523" class="bugtitle">trove-conductor needs packaging</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    openstack-manuals
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">24</span>
+                </span>
+            <span class="bug-related-icons">
+                <span alt="branch" title="Branch exists" class="sprite branch"></span> <a href="https://launchpad.net/openstack-manuals/+milestone/juno" alt="milestone juno" title="Linked to milestone juno" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusCONFIRMED">
+            Confirmed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1324297</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1324297" class="bugtitle">[smoke] master iso smoke test failed with anaconda error</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">10</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.1" alt="milestone 5.1" title="Linked to milestone 5.1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1324592</span>
+            <a href="https://bugs.launchpad.net/keystone/+bug/1324592" class="bugtitle">[OSSA 2014-018] Trust scope can be circumvented by chaining trusts (CVE-2014-3476)</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Keystone
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">266</span>
+                </span>
+            <span class="bug-related-icons">
+                <span alt="haspatch" title="Has a patch" class="sprite haspatch-icon"></span>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1324903</span>
+            <a href="https://bugs.launchpad.net/blazar/+bug/1324903" class="bugtitle">Fix tests gates failing due to keystone client 0.9.0</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Blazar
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusINPROGRESS">
+            In Progress
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1324927</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1324927" class="bugtitle">qemu vulnerabilities (CVE-2014-0150, CVE-2014-2894)</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">256</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.1" alt="milestone 5.1" title="Linked to milestone 5.1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1325347</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1325347" class="bugtitle">Verification failed. Error occurred while running method 'verify_networks'</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.0.1" alt="milestone 5.0.1" title="Linked to milestone 5.0.1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1325537</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1325537" class="bugtitle">SQLAlchemy and Alembic packages with new versions needed</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.1" alt="milestone 5.1" title="Linked to milestone 5.1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusCONFIRMED">
+            Confirmed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1325907</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1325907" class="bugtitle">[system tests] Snapshot was not created for test in error state</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.1" alt="milestone 5.1" title="Linked to milestone 5.1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1326066</span>
+            <a href="https://bugs.launchpad.net/blazar/+bug/1326066" class="bugtitle">Keystone client fails to authorize during trust creation</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Blazar
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">14</span>
+                </span>
+            <span class="bug-related-icons">
+                
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1326125</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1326125" class="bugtitle">Docs misguide in master node PXE address setting</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">14</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.1" alt="milestone 5.1" title="Linked to milestone 5.1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusINPROGRESS">
+            In Progress
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1326207</span>
+            <a href="https://bugs.launchpad.net/nova/+bug/1326207" class="bugtitle">infinitely reschedule instance when boot instance failed</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    OpenStack Compute (nova)
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">12</span>
+                </span>
+            <span class="bug-related-icons">
+                
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1326382</span>
+            <a href="https://bugs.launchpad.net/murano/+bug/1326382" class="bugtitle">[python-muranoclient] Get method doen't return information about specific app</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    murano
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">10</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/murano/+milestone/juno-2" alt="milestone juno-2" title="Linked to milestone juno-2" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1327009</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1327009" class="bugtitle">Fuel uses interface Docker0 for PXE</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">8</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.1" alt="milestone 5.1" title="Linked to milestone 5.1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusINPROGRESS">
+            In Progress
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1327132</span>
+            <a href="https://bugs.launchpad.net/murano/+bug/1327132" class="bugtitle">Data base exception</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    murano
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">10</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/murano/+milestone/juno-2" alt="milestone juno-2" title="Linked to milestone juno-2" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusNEW">
+            New
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1298472</span>
+            <a href="https://bugs.launchpad.net/nova/+bug/1298472" class="bugtitle">SSHTimeout in tempest scenario tests using nova-network</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    OpenStack Compute (nova)
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">82</span>
+                </span>
+            <span class="bug-related-icons">
+                
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1328163</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1328163" class="bugtitle">'NodeBondInterface' object has no attribute 'ip_addr'</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.1" alt="milestone 5.1" title="Linked to milestone 5.1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1328200</span>
+            <a href="https://bugs.launchpad.net/fuel/+bug/1328200" class="bugtitle">Nailgun hangs fuel</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Fuel for OpenStack
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">24</span>
+                </span>
+            <span class="bug-related-icons">
+                <a href="https://launchpad.net/fuel/+milestone/5.1" alt="milestone 5.1" title="Linked to milestone 5.1" class="sprite milestone"></a>
+            </span>
+        </div>
+    </div>
+
+  </div>
+  <div class="buglisting-row">
+
+    <div class="buglisting-col1">
+        <div class="importance importanceCRITICAL">
+            Critical
+        </div>
+        <div class="status statusFIXCOMMITTED">
+            Fix Committed
+        </div>
+        <div class="buginfo-extra">
+        </div>
+    </div>
+
+    <div class="buglisting-col2">
+        <div class="buginfo">
+                <span class="bugnumber">#1328201</span>
+            <a href="https://bugs.launchpad.net/keystone/+bug/1328201" class="bugtitle">Cannot fetch Certs with Compressed token provider</a>
+        </div>
+        <div class="buginfo-extra">
+                <span class="sprite product field">
+                    Keystone
+                </span>
+                <span class="bug-heat-icons">
+                     <span class="sprite flame">6</span>
+                </span>
+            <span class="bug-related-icons">
+                
+            </span>
+        </div>
+    </div>
+
+  </div>
+</div>
+</div>
+        <script>LP.mustache_listings = "\u003cdiv class=\"listing\"\u003e\n{{#items}}\n  \u003cdiv class=\"buglisting-row\"\u003e\n\n    \u003cdiv class=\"buglisting-col1\"\u003e\n        {{#show_importance}}\n        \u003cdiv class=\"importance {{importance_class}}\"\u003e\n            {{importance}}\n        \u003c/div\u003e\n        {{/show_importance}}\n        {{#show_status}}\n        \u003cdiv class=\"status {{status_class}}\"\u003e\n            {{status}}\n        \u003c/div\u003e\n        {{/show_status}}\n        \u003cdiv class=\"buginfo-extra\"\u003e\n            {{#show_information_type}}\n                \u003cdiv class=\"information_type\"\u003e\n                    {{information_type}}\n                \u003c/div\u003e\n            {{/show_information_type}}\n        \u003c/div\u003e\n    \u003c/div\u003e\n\n    \u003cdiv class=\"buglisting-col2\"\u003e\n        \u003cdiv class=\"buginfo\"\u003e\n            {{#show_id}}\n                \u003cspan class=\"bugnumber\"\u003e#{{id}}\u003c/span\u003e\n            {{/show_id}}\n            \u003ca href=\"{{bug_url}}\" class=\"bugtitle\"\u003e{{title}}\u003c/a\u003e\n        \u003c/div\u003e\n        \u003cdiv class=\"buginfo-extra\"\u003e\n            {{#show_targetname}}\n                \u003cspan class=\"{{bugtarget_css}} field\"\u003e\n                    {{bugtarget}}\n                \u003c/span\u003e\n            {{/show_targetname}}\n            {{#show_milestone_name}}\n                \u003cspan class=\"sprite milestone field\"\u003e\n                    {{#milestone_name}}\n                    {{milestone_name}}\n                    {{/milestone_name}}\n                    {{^milestone_name}}\n                    No milestone set\n                    {{/milestone_name}}\n                \u003c/span\u003e\n            {{/show_milestone_name}}\n            {{#show_date_last_updated}}\n                \u003cspan class=\"sprite milestone field\"\u003e\n                    Last updated {{last_updated}}\n                \u003c/span\u003e\n            {{/show_date_last_updated}}\n            {{#show_assignee}}\n                \u003cspan class=\"sprite person field\"\u003e\n                    {{#assignee}}Assignee: {{assignee}}{{/assignee}}\n                    {{^assignee}}Assignee: None{{/assignee}}\n                \u003c/span\u003e\n            {{/show_assignee}}\n            {{#show_reporter}}\n                \u003cspan class=\"sprite person field\"\u003e\n                    Reporter: {{reporter}}\n                \u003c/span\u003e\n            {{/show_reporter}}\n            {{#show_datecreated}}\n                \u003cspan class=\"sprite aging field\"\u003e\n                    {{age}}\n                \u003c/span\u003e\n            {{/show_datecreated}}\n            {{#show_tag}}\n                \u003cspan class=\"field\"\u003eTags:\n                  {{^has_tags}}None{{/has_tags}}\n                  {{#tags}}\n                     \u003ca href=\"{{url}}\" class=\"tag\"\u003e{{tag}}\u003c/a\u003e\u0026#160;\n                  {{/tags}}\n                \u003c/span\u003e\n            {{/show_tag}}\n            {{#show_heat}}\n                \u003cspan class=\"bug-heat-icons\"\u003e\n                     {{{bug_heat_html}}}\n                \u003c/span\u003e\n            {{/show_heat}}\n            \u003cspan class=\"bug-related-icons\"\u003e\n                {{{badges}}}\n            \u003c/span\u003e\n        \u003c/div\u003e\n    \u003c/div\u003e\n\n  \u003c/div\u003e\n{{/items}}\n\u003c/div\u003e\n";</script>
+    
+    <div class="lesser"><table style="width: 100%;" class="lower-batch-nav">
+  <tbody>
+    <tr>
+      <td style="white-space: nowrap" class="batch-navigation-index">
+        
+            <strong>1</strong>
+            
+              &rarr;
+              <strong>75</strong>
+            
+            of
+            8505
+            results
+        
+      </td>
+      <td style="text-align: right; white-space: nowrap" class="batch-navigation-links">
+        
+        <span class="first inactive">First</span>
+        &bull;
+        
+        <span class="previous inactive">Previous</span>
+        &bull;
+        <a class="next" rel="next"
+           href="https://bugs.launchpad.net/openstack/+bugs?memo=75&amp;start=75"
+           id="lower-batch-nav-batchnav-next"><strong>Next</strong></a>
+        
+        
+          &bull;
+          <a class="last" rel="last"
+             href="https://bugs.launchpad.net/openstack/+bugs?direction=backwards&amp;start=8475"
+             id="lower-batch-nav-batchnav-last">Last</a>
+          
+        
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+  
+
+  
+</div>
+
+          </div>
+        
+
+        
+      
+
+      <div class="yui-u">
+        <div id="structural-subscription-content-box"></div>
+      </div>
+    </div>
+  </div>
+            
+            
+          </div><!-- yui-b -->
+        </div><!-- yui-main -->
+
+        
+          <div id="side-portlets" class="yui-b side">
+            
+    <div id="bug-portlets">
+      <div id="involvement" class="portlet">
+        <ul class="involvement">
+          <li class="first">
+            <a href="+filebug" class="menu-link-filebug sprite bugs">
+              Report a bug
+            </a>
+          </li>
+          
+        </ul>
+
+      </div>
+      <div class="portlet">
+        <ul>
+          
+          
+        </ul>
+      </div>
+      
+      
+      
+        <div class="portlet" id="portlet-bugfilters">
+  <a id="bugtarget-bugfilters-link"
+     href="/openstack/+bugtarget-portlet-bugfilters-stats">
+  </a>
+  <div id="bugfilters-portlet-content">
+  
+<ul class="data-list">
+  <li>
+    <span class="count"></span>
+      <a href="+bugs?search=Search&amp;field.status=New">
+      
+  
+   New bugs
+      </a>
+  </li>
+  <li>
+    <span class="count"></span>
+      <a href="https://bugs.launchpad.net/openstack/+bugs">
+      
+  
+   Open bugs
+      </a>
+  </li>
+  <li>
+    <span class="count"></span>
+      <a href="+bugs?search=Search&amp;field.status=In+Progress">
+      
+  
+   In-progress bugs
+      </a>
+  </li>
+  <li>
+    <span class="count"></span>
+      <a href="+bugs?search=Search&amp;field.importance=Critical&amp;field.status=New&amp;field.status=Incomplete&amp;field.status=Confirmed&amp;field.status=Triaged&amp;field.status=In+Progress&amp;field.status=Fix+Committed">
+      
+  
+   Critical bugs
+      </a>
+  </li>
+  <li>
+    <span class="count"></span>
+      <a href="+bugs?search=Search&amp;field.importance=High&amp;field.status=New&amp;field.status=Incomplete&amp;field.status=Confirmed&amp;field.status=Triaged&amp;field.status=In+Progress&amp;field.status=Fix+Committed">
+      
+  
+   High importance bugs
+      </a>
+  </li>
+  
+  <li class="breaker"></li>
+  
+  
+  
+  <li class="breaker"></li>
+  <li>
+    
+    <span class="count"></span>
+      <a href="https://bugs.launchpad.net/openstack/+bugs?field.status_upstream=resolved_upstream">
+      Bugs fixed elsewhere
+      </a>
+  </li>
+  <li>
+    <span class="count"></span>
+      <a href="/openstack/+patches">
+      
+  
+   Bugs with patches
+      </a>
+  </li>
+  <li>
+    <span class="count"></span>
+      <a href="https://bugs.launchpad.net/openstack/+bugs?field.has_cve=on">
+      
+  
+   Open CVE bugs
+      </a>
+      
+  </li>
+  
+</ul>
+
+</div>
+  <script type="text/javascript">
+    LPJS.use('io-base', 'node', function(Y) {
+        Y.on('domready', function() {
+            var url = Y.one('#bugtarget-bugfilters-link').getAttribute('href');
+            var handlers = {
+                success: function(transactionid, response, arguments) {
+                    Y.one('#bugfilters-portlet-content').set(
+                        'innerHTML', response.responseText);
+                },
+                failure: function() {
+                    Y.one('#bugfilters-portlet-content').set('innerHTML', '');
+                }
+            };
+            var request = Y.io(url, {on: handlers});
+        });
+    });
+  </script>
+</div>
+
+        
+        <div class="portlet" id="portlet-tags">
+  <div id="tags-portlet-spinner" class="hidden centered">
+    <img src="/@@/spinner" />
+  </div>
+  <a id="tags-content-link"
+     href="/openstack/+bugtarget-portlet-tags-content"></a>
+  <script type="text/javascript">
+    LPJS.use('lp.bugs.bugtask.taglist', function(Y) {
+      Y.on('domready', function() {
+        Y.lp.bugs.bugtask.taglist.setup_taglist();
+      });
+    });
+  </script>
+  <a href="" id="show-more-tags-link" class="js-action hidden">Show more tags&hellip;</a>
+  <a href="" id="show-fewer-tags-link" class="js-action hidden">Show fewer tags&hellip;</a>
+  <div class="breaker"></div>
+  
+</div>
+
+        
+        
+       
+    </div>
+  
+          </div><!-- yui-b side -->
+        
+      </div><!-- yui-t4 -->
+
+      
+  <div id="footer" class="footer">
+    <div class="lp-arcana">
+        <div class="lp-branding">
+          <a href="https://launchpad.net/"><img src="/@@/launchpad-logo-and-name-hierarchy.png" alt="Launchpad" /></a>
+          &nbsp;&bull;&nbsp;
+          <a href="https://launchpad.net/+tour">Take the tour</a>
+          &nbsp;&bull;&nbsp;
+          <a href="https://help.launchpad.net/">Read the guide</a>
+          &nbsp;
+          <form id="globalsearch" method="get"
+                accept-charset="UTF-8"
+                action="https://launchpad.net/+search">
+            <input type="search" id="search-text" name="field.text" />
+            <input type="image" src="/@@/search" style="vertical-align:5%" alt="Search Launchpad" />
+          </form>
+        </div>
+        
+  
+
+    </div>
+
+    <div class="colophon">
+      &copy; 2004-2014
+      <a href="http://canonical.com/">Canonical&nbsp;Ltd.</a>
+      &nbsp;&bull;&nbsp;
+      <a href="https://launchpad.net/legal">Terms of use</a>
+      &nbsp;&bull;&nbsp;
+      <a href="/feedback">Contact Launchpad Support</a>
+      
+      &nbsp;&bull;&nbsp;
+      <a href="http://blog.launchpad.net/">Blog</a>
+      
+	&nbsp;&bull;&nbsp;
+	<a href="http://www.canonical.com/about-canonical/careers">Careers</a>
+      
+      &nbsp;&bull;&nbsp;
+      <a href="http://identi.ca/launchpadstatus">System status</a>
+      <span id="lp-version">
+      &nbsp;&bull;&nbsp;
+        r17082
+        
+        
+        (<a href="https://dev.launchpad.net/">Get the code!</a>)
+      </span>
+    </div>
+  </div>
+
+    </div><!-- yui-d0-->
+
+    <div id="help-pane" class="invisible">
+      <div id="help-body">
+        
+        <iframe id="help-pane-content" class="invisible" src="javascript:void(0);"></iframe>
+      </div>
+      <div id="help-footer">
+        <span id="help-close"></span>
+      </div>
+    </div>
+
+    
+  
+  
+  <script id="json-cache-script">LP.cache = {"field_visibility": {"show_id": true, "show_information_type": false, "show_tag": false, "show_reporter": false, "show_importance": true, "show_assignee": false, "show_date_last_updated": false, "show_datecreated": false, "show_targetname": true, "show_heat": true, "show_milestone_name": false, "show_status": true}, "order_by": "-importance", "target_info": {"url": "https://launchpad.net/openstack", "title": "OpenStack"}, "forwards": true, "start": 0, "related_features": {"bugs.dynamic_bug_listings.pre_fetch": {"url": "https://bugs.launchpad.net/launchpad/+bug/888756", "is_beta": false, "value": null, "title": "Listing pre-fetching"}}, "memo": null, "last_start": 8475, "mustache_model": {"items": [{"bugtarget": "OpenStack Core Infrastructure", "status": "In Progress", "bugtarget_css": "sprite product", "reporter": "James E. Blair", "importance": "Critical", "age": "2 years old", "title": "important servers should have backups", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e8\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Clark Boylan", "has_tags": false, "badges": "\u003ca href=\"https://launchpad.net/openstack-ci/+milestone/icehouse\" alt=\"milestone icehouse\" title=\"Linked to milestone icehouse\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1010621, "last_updated": "on 2014-02-04", "status_class": "statusINPROGRESS", "milestone_name": "OpenStack Core Infrastructure icehouse", "tags": [], "bug_url": "https://bugs.launchpad.net/openstack-ci/+bug/1010621"}, {"bugtarget": "python-cinderclient", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "John Griffith", "importance": "Critical", "age": "1 year old", "title": "Missing body parameters in volume create function", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e12\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "John Griffith", "has_tags": false, "badges": "", "information_type": "Public", "id": 1028684, "last_updated": "on 2012-09-27", "status_class": "statusFIXCOMMITTED", "milestone_name": null, "tags": [], "bug_url": "https://bugs.launchpad.net/python-cinderclient/+bug/1028684"}, {"bugtarget": "python-ceilometerclient", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Eoghan Glynn", "importance": "Critical", "age": "1 year old", "title": "mis-scoped Client class breaks CLI", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Eoghan Glynn", "has_tags": false, "badges": "", "information_type": "Public", "id": 1180439, "last_updated": "on 2013-05-16", "status_class": "statusFIXCOMMITTED", "milestone_name": null, "tags": [], "bug_url": "https://bugs.launchpad.net/python-ceilometerclient/+bug/1180439"}, {"bugtarget": "anvil", "status": "Confirmed", "bugtarget_css": "sprite product", "reporter": "Joshua Harlow", "importance": "Critical", "age": "1 year old", "title": "fix-char-dev-permissions", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": null, "has_tags": false, "badges": "", "information_type": "Public", "id": 1184013, "last_updated": "on 2013-05-24", "status_class": "statusCONFIRMED", "milestone_name": null, "tags": [], "bug_url": "https://bugs.launchpad.net/anvil/+bug/1184013"}, {"bugtarget": "openstack-manuals", "status": "Confirmed", "bugtarget_css": "sprite product", "reporter": "Lorin Hochstein", "importance": "Critical", "age": "1 year old", "title": "Clearly mark outdated doc pages", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e52\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Anne Gentle", "has_tags": true, "badges": "\u003cspan alt=\"blueprint\" title=\"Related to a blueprint\" class=\"sprite blueprint\"\u003e\u003c/span\u003e \u003ca href=\"https://launchpad.net/openstack-manuals/+milestone/juno\" alt=\"milestone juno\" title=\"Linked to milestone juno\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1191447, "last_updated": "on 2014-06-11", "status_class": "statusCONFIRMED", "milestone_name": "openstack-manuals juno", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=doc-builds", "tag": "doc-builds"}], "bug_url": "https://bugs.launchpad.net/openstack-manuals/+bug/1191447"}, {"bugtarget": "python-neutronclient", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Nachi Ueno", "importance": "Critical", "age": "329 days old", "title": " AttributeError: 'MockClient' object has no attribute 'EXTED_PLURALS' ", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Nachi Ueno", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/python-neutronclient/+milestone/2.2.1\" alt=\"milestone 2.2.1\" title=\"Linked to milestone 2.2.1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1209364, "last_updated": "on 2013-09-09", "status_class": "statusFIXCOMMITTED", "milestone_name": "python-neutronclient 2.2.1", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=testing", "tag": "testing"}], "bug_url": "https://bugs.launchpad.net/python-neutronclient/+bug/1209364"}, {"bugtarget": "PBR", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Alessandro Pilotti", "importance": "Critical", "age": "326 days old", "title": "requirements.txt install fails on Windows ", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Alessandro Pilotti", "has_tags": false, "badges": "", "information_type": "Public", "id": 1210912, "last_updated": "on 2013-08-14", "status_class": "statusFIXCOMMITTED", "milestone_name": null, "tags": [], "bug_url": "https://bugs.launchpad.net/pbr/+bug/1210912"}, {"bugtarget": "OpenStack Core Infrastructure", "status": "In Progress", "bugtarget_css": "sprite product", "reporter": "Timur Sufiev", "importance": "Critical", "age": "255 days old", "title": "manage-projects error on new project creation", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e58\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Monty Taylor", "has_tags": false, "badges": "\u003ca href=\"https://launchpad.net/openstack-ci/+milestone/icehouse\" alt=\"milestone icehouse\" title=\"Linked to milestone icehouse\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1242569, "last_updated": "on 2014-03-11", "status_class": "statusINPROGRESS", "milestone_name": "OpenStack Core Infrastructure icehouse", "tags": [], "bug_url": "https://bugs.launchpad.net/openstack-ci/+bug/1242569"}, {"bugtarget": "tempest", "status": "Confirmed", "bugtarget_css": "sprite product", "reporter": "Clark Boylan", "importance": "Critical", "age": "223 days old", "title": "Attempts to verify guests are running via SSH fails. SSH connection to guest does not work.", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e204\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": null, "has_tags": true, "badges": "\u003cspan alt=\"blueprint\" title=\"Related to a blueprint\" class=\"sprite blueprint\"\u003e\u003c/span\u003e \u003ca href=\"https://launchpad.net/tempest/+milestone/havana-stable\" alt=\"milestone havana-stable\" title=\"Linked to milestone havana-stable\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1253896, "last_updated": "on 2014-06-24", "status_class": "statusCONFIRMED", "milestone_name": "tempest havana-stable", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=testing", "tag": "testing"}], "bug_url": "https://bugs.launchpad.net/tempest/+bug/1253896"}, {"bugtarget": "oslo.messaging", "status": "In Progress", "bugtarget_css": "sprite product", "reporter": "Rafi Khardalian", "importance": "Critical", "age": "2 years old", "title": "RabbitMQ connections lack heartbeat or TCP keepalives", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e134\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "James Page", "has_tags": true, "badges": "\u003cspan alt=\"haspatch\" title=\"Has a patch\" class=\"sprite haspatch-icon\"\u003e\u003c/span\u003e", "information_type": "Public", "id": 856764, "last_updated": "on 2014-07-01", "status_class": "statusINPROGRESS", "milestone_name": null, "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=havana-backport-potential", "tag": "havana-backport-potential"}], "bug_url": "https://bugs.launchpad.net/oslo.messaging/+bug/856764"}, {"bugtarget": "tripleo", "status": "In Progress", "bugtarget_css": "sprite product", "reporter": "Robert Collins", "importance": "Critical", "age": "193 days old", "title": "ephemeral0 of /dev/sda1 triggers 'did not find entry for sda1 in /sys/block'", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e14\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Michael Kerrin", "has_tags": false, "badges": "", "information_type": "Public", "id": 1263294, "last_updated": "on 2014-05-09", "status_class": "statusINPROGRESS", "milestone_name": null, "tags": [], "bug_url": "https://bugs.launchpad.net/tripleo/+bug/1263294"}, {"bugtarget": "OpenStack Core Infrastructure", "status": "In Progress", "bugtarget_css": "sprite product", "reporter": "Jeremy Stanley", "importance": "Critical", "age": "177 days old", "title": "Some Python requirements are not hosted on PyPI", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e44\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Jeremy Stanley", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/openstack-ci/+milestone/icehouse\" alt=\"milestone icehouse\" title=\"Linked to milestone icehouse\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1266513, "last_updated": "on 2014-06-19", "status_class": "statusINPROGRESS", "milestone_name": "OpenStack Core Infrastructure icehouse", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=elastic-recheck", "tag": "elastic-recheck"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=havana-backport-potential", "tag": "havana-backport-potential"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=pypi-mirror", "tag": "pypi-mirror"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=reviewday", "tag": "reviewday"}], "bug_url": "https://bugs.launchpad.net/openstack-ci/+bug/1266513"}, {"bugtarget": "OpenStack + Chef", "status": "Confirmed", "bugtarget_css": "sprite product", "reporter": "Ionu\u021b Ar\u021b\u0103ri\u0219i", "importance": "Critical", "age": "155 days old", "title": "[network] Subsequent database migrations fail", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e14\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": null, "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/openstack-chef/+milestone/icehouse-rc1\" alt=\"milestone icehouse-rc1\" title=\"Linked to milestone icehouse-rc1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1273754, "last_updated": "on 2014-04-11", "status_class": "statusCONFIRMED", "milestone_name": "OpenStack + Chef icehouse-rc1", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=icehouse", "tag": "icehouse"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=neutron", "tag": "neutron"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=postgresql", "tag": "postgresql"}], "bug_url": "https://bugs.launchpad.net/openstack-chef/+bug/1273754"}, {"bugtarget": "OpenStack Core Infrastructure", "status": "In Progress", "bugtarget_css": "sprite product", "reporter": "Jeremy Stanley", "importance": "Critical", "age": "154 days old", "title": "infrastructure-wide issues with tox 1.7.0", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e110\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Clark Boylan", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/openstack-ci/+milestone/icehouse\" alt=\"milestone icehouse\" title=\"Linked to milestone icehouse\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1274135, "last_updated": "on 2014-06-17", "status_class": "statusINPROGRESS", "milestone_name": "OpenStack Core Infrastructure icehouse", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=gate-failure", "tag": "gate-failure"}], "bug_url": "https://bugs.launchpad.net/openstack-ci/+bug/1274135"}, {"bugtarget": "Fuel for OpenStack", "status": "Incomplete", "bugtarget_css": "sprite product", "reporter": "Anastasia Palkina", "importance": "Critical", "age": "149 days old", "title": "HA deployment has failed on 3-rd controller with error: Timeout of deployment is exceeded (GRE Latency)", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e10\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Fuel Library Team", "has_tags": false, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.1\" alt=\"milestone 5.1\" title=\"Linked to milestone 5.1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1275754, "last_updated": "on 2014-06-25", "status_class": "statusINCOMPLETE", "milestone_name": "Fuel for OpenStack 5.1", "tags": [], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1275754"}, {"bugtarget": "Blazar", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Dina Belova", "importance": "Critical", "age": "134 days old", "title": "Climate not working with Keystone Client 0.6.0 or higher", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Dina Belova", "has_tags": false, "badges": "\u003ca href=\"https://launchpad.net/blazar/+milestone/0.1.1\" alt=\"milestone 0.1.1\" title=\"Linked to milestone 0.1.1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1281487, "last_updated": "on 2014-02-20", "status_class": "statusFIXCOMMITTED", "milestone_name": "Blazar 0.1.1", "tags": [], "bug_url": "https://bugs.launchpad.net/blazar/+bug/1281487"}, {"bugtarget": "Blazar", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Dina Belova", "importance": "Critical", "age": "134 days old", "title": "Climate is not working with oslo.messaging 1.3.0.a7 or higher", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Dina Belova", "has_tags": false, "badges": "\u003ca href=\"https://launchpad.net/blazar/+milestone/0.1.1\" alt=\"milestone 0.1.1\" title=\"Linked to milestone 0.1.1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1281521, "last_updated": "on 2014-02-19", "status_class": "statusFIXCOMMITTED", "milestone_name": "Blazar 0.1.1", "tags": [], "bug_url": "https://bugs.launchpad.net/blazar/+bug/1281521"}, {"bugtarget": "Blazar", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Dina Belova", "importance": "Critical", "age": "127 days old", "title": "Reworking configuration options broke devstack", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Dina Belova", "has_tags": false, "badges": "\u003ca href=\"https://launchpad.net/blazar/+milestone/0.1.1\" alt=\"milestone 0.1.1\" title=\"Linked to milestone 0.1.1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1284675, "last_updated": "on 2014-02-26", "status_class": "statusFIXCOMMITTED", "milestone_name": "Blazar 0.1.1", "tags": [], "bug_url": "https://bugs.launchpad.net/blazar/+bug/1284675"}, {"bugtarget": "Blazar", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Robert Collins", "importance": "Critical", "age": "121 days old", "title": "Error importing module nova.openstack.common.sslutils: duplicate option: ca_file", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e30\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Dina Belova", "has_tags": true, "badges": "", "information_type": "Public", "id": 1287542, "last_updated": "on 2014-06-12", "status_class": "statusFIXCOMMITTED", "milestone_name": null, "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=requirements", "tag": "requirements"}], "bug_url": "https://bugs.launchpad.net/blazar/+bug/1287542"}, {"bugtarget": "Ceilometer", "status": "In Progress", "bugtarget_css": "sprite product", "reporter": "Joe Gordon", "importance": "Critical", "age": "105 days old", "title": "ceilometer swift module is spamming rsyslog with useless logs", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e14\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Nadya Privalova", "has_tags": false, "badges": "", "information_type": "Public", "id": 1294789, "last_updated": "on 2014-06-24", "status_class": "statusINPROGRESS", "milestone_name": null, "tags": [], "bug_url": "https://bugs.launchpad.net/ceilometer/+bug/1294789"}, {"bugtarget": "tempest", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Ihar Hrachyshka", "importance": "Critical", "age": "97 days old", "title": "SSHTimeout in tempest scenario tests using nova-network", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e82\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Matt Riedemann", "has_tags": true, "badges": "", "information_type": "Public", "id": 1298472, "last_updated": "5 hours ago", "status_class": "statusFIXCOMMITTED", "milestone_name": null, "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=gate-failure", "tag": "gate-failure"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=nova-network", "tag": "nova-network"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=testing", "tag": "testing"}], "bug_url": "https://bugs.launchpad.net/tempest/+bug/1298472"}, {"bugtarget": "OpenStack Compute (nova)", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Pavel Kirpichyov", "importance": "Critical", "age": "95 days old", "title": " quota-class-update", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e18\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Matt Riedemann", "has_tags": true, "badges": "", "information_type": "Public", "id": 1299517, "last_updated": "on 2014-07-01", "status_class": "statusFIXCOMMITTED", "milestone_name": null, "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=icehouse", "tag": "icehouse"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=icehouse-backport-potential", "tag": "icehouse-backport-potential"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=in-stable-icehouse", "tag": "in-stable-icehouse"}], "bug_url": "https://bugs.launchpad.net/nova/+bug/1299517"}, {"bugtarget": "OpenStack-SDK-PHP", "status": "In Progress", "bugtarget_css": "sprite product", "reporter": "mattfarina", "importance": "Critical", "age": "90 days old", "title": "stream wrapper only works for default region", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Sam Choi", "has_tags": false, "badges": "", "information_type": "Public", "id": 1302189, "last_updated": "on 2014-04-18", "status_class": "statusINPROGRESS", "milestone_name": null, "tags": [], "bug_url": "https://bugs.launchpad.net/openstack-sdk-php/+bug/1302189"}, {"bugtarget": "Cinder", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Xing Yang", "importance": "Critical", "age": "87 days old", "title": "BrcdFCSanLookupService doesn't handle more than 1 switch", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Angela Smith", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/cinder/+milestone/juno-2\" alt=\"milestone juno-2\" title=\"Linked to milestone juno-2\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1303460, "last_updated": "on 2014-06-27", "status_class": "statusFIXCOMMITTED", "milestone_name": "Cinder juno-2", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=brocade", "tag": "brocade"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=fibrechannel", "tag": "fibrechannel"}], "bug_url": "https://bugs.launchpad.net/cinder/+bug/1303460"}, {"bugtarget": "heat", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Matt Riedemann", "importance": "Critical", "age": "83 days old", "title": "tempest.api.orchestration.stacks.test_stacks times out during tearDownClass", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e10\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Zane Bitter", "has_tags": false, "badges": "\u003ca href=\"https://launchpad.net/heat/+milestone/juno-2\" alt=\"milestone juno-2\" title=\"Linked to milestone juno-2\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1306029, "last_updated": "on 2014-06-24", "status_class": "statusFIXCOMMITTED", "milestone_name": "heat juno-2", "tags": [], "bug_url": "https://bugs.launchpad.net/heat/+bug/1306029"}, {"bugtarget": "Cinder", "status": "In Progress", "bugtarget_css": "sprite product", "reporter": "Xing Yang", "importance": "Critical", "age": "78 days old", "title": "Zone manager removes zoning when there are still volumes attached", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e18\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Walt Boring", "has_tags": true, "badges": "", "information_type": "Public", "id": 1308318, "last_updated": "20 hours ago", "status_class": "statusINPROGRESS", "milestone_name": null, "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=fibrechannel", "tag": "fibrechannel"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=zonemanager", "tag": "zonemanager"}], "bug_url": "https://bugs.launchpad.net/cinder/+bug/1308318"}, {"bugtarget": "tripleo", "status": "Triaged", "bugtarget_css": "sprite product", "reporter": "Derek Higgins", "importance": "Critical", "age": "78 days old", "title": "Nodepool favouring precise nodes over f20", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e12\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Derek Higgins", "has_tags": false, "badges": "", "information_type": "Public", "id": 1308407, "last_updated": "on 2014-07-01", "status_class": "statusTRIAGED", "milestone_name": null, "tags": [], "bug_url": "https://bugs.launchpad.net/tripleo/+bug/1308407"}, {"bugtarget": "Fuel for OpenStack", "status": "In Progress", "bugtarget_css": "sprite product", "reporter": "Aleksandra Fedorova", "importance": "Critical", "age": "77 days old", "title": "Ubuntu logs are incomplete in snapshot", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e14\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Bogdan Dobrelya", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.1\" alt=\"milestone 5.1\" title=\"Linked to milestone 5.1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1308684, "last_updated": "on 2014-07-01", "status_class": "statusINPROGRESS", "milestone_name": "Fuel for OpenStack 5.1", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=system-tests", "tag": "system-tests"}], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1308684"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Tatyana", "importance": "Critical", "age": "76 days old", "title": "Instances do not boot sucessfully on Ubuntu neutron", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Roman Vyalov", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.0\" alt=\"milestone 5.0\" title=\"Linked to milestone 5.0\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1309087, "last_updated": "on 2014-06-30", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.0", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=icehouse", "tag": "icehouse"}], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1309087"}, {"bugtarget": "Fuel for OpenStack", "status": "In Progress", "bugtarget_css": "sprite product", "reporter": "Mike Scherbakov", "importance": "Critical", "age": "73 days old", "title": "Run additional controllers in parallel", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Dmitry Pyzhov", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.1\" alt=\"milestone 5.1\" title=\"Linked to milestone 5.1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1310494, "last_updated": "15 hours ago", "status_class": "statusINPROGRESS", "milestone_name": "Fuel for OpenStack 5.1", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=release-notes", "tag": "release-notes"}], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1310494"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Sergey Vasilenko", "importance": "Critical", "age": "69 days old", "title": "mysql reconnect does not catch 1047 errors", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Max Rasskazov", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.0\" alt=\"milestone 5.0\" title=\"Linked to milestone 5.0\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1312212, "last_updated": "on 2014-06-16", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.0", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=db", "tag": "db"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=ha", "tag": "ha"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=nova", "tag": "nova"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=release-notes", "tag": "release-notes"}], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1312212"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Vladimir Kuklin", "importance": "Critical", "age": "68 days old", "title": "neutron nova notify service tenant id is missing on the primary controller", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Sergey Vasilenko", "has_tags": false, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.0\" alt=\"milestone 5.0\" title=\"Linked to milestone 5.0\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1312614, "last_updated": "on 2014-06-04", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.0", "tags": [], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1312614"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Vladimir Kuklin", "importance": "Critical", "age": "68 days old", "title": "outdated websockify package at least in Ubuntu", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Sergey Otpuschennikov", "has_tags": false, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.0\" alt=\"milestone 5.0\" title=\"Linked to milestone 5.0\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1312645, "last_updated": "on 2014-04-25", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.0", "tags": [], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1312645"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Bogdan Dobrelya", "importance": "Critical", "age": "64 days old", "title": "Missing documentation: repo for docker (4.4. Building the Fuel ISO)", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e10\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Matthew Mosesohn", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.0\" alt=\"milestone 5.0\" title=\"Linked to milestone 5.0\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1314194, "last_updated": "on 2014-05-21", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.0", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=docs", "tag": "docs"}], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1314194"}, {"bugtarget": "tripleo", "status": "In Progress", "bugtarget_css": "sprite product", "reporter": "jan grant", "importance": "Critical", "age": "57 days old", "title": "set -eu may spuriously break dkms module", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Ghe Rivero", "has_tags": false, "badges": "", "information_type": "Public", "id": 1316985, "last_updated": "on 2014-05-23", "status_class": "statusINPROGRESS", "milestone_name": null, "tags": [], "bug_url": "https://bugs.launchpad.net/tripleo/+bug/1316985"}, {"bugtarget": "tripleo", "status": "Triaged", "bugtarget_css": "sprite product", "reporter": "Cian O'Driscoll", "importance": "Critical", "age": "56 days old", "title": "Guest VM FS corruption after compute host reboot", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Roman Podoliaka", "has_tags": false, "badges": "", "information_type": "Public", "id": 1317056, "last_updated": "on 2014-06-10", "status_class": "statusTRIAGED", "milestone_name": null, "tags": [], "bug_url": "https://bugs.launchpad.net/tripleo/+bug/1317056"}, {"bugtarget": "Cinder", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "John Griffith", "importance": "Critical", "age": "55 days old", "title": "The call to add_admin_meta to view in list volumes takes incredibly long ", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e8\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "John Griffith", "has_tags": true, "badges": "", "information_type": "Public", "id": 1317606, "last_updated": "on 2014-06-25", "status_class": "statusFIXCOMMITTED", "milestone_name": null, "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=havana-backport-potential", "tag": "havana-backport-potential"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=icehouse-backport-potential", "tag": "icehouse-backport-potential"}], "bug_url": "https://bugs.launchpad.net/cinder/+bug/1317606"}, {"bugtarget": "Ironic", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Chris Krelle", "importance": "Critical", "age": "55 days old", "title": "disk volume labels on conductor can conflict with nodes disk labels", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Chris Krelle", "has_tags": false, "badges": "\u003ca href=\"https://launchpad.net/ironic/+milestone/juno-2\" alt=\"milestone juno-2\" title=\"Linked to milestone juno-2\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1317647, "last_updated": "on 2014-06-12", "status_class": "statusFIXCOMMITTED", "milestone_name": "Ironic juno-2", "tags": [], "bug_url": "https://bugs.launchpad.net/ironic/+bug/1317647"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Sergii Golovatiuk", "importance": "Critical", "age": "50 days old", "title": "Docker upgrade script crashes", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e8\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Evgeniy L", "has_tags": false, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.0\" alt=\"milestone 5.0\" title=\"Linked to milestone 5.0\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1319018, "last_updated": "on 2014-05-14", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.0", "tags": [], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1319018"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Sergii Golovatiuk", "importance": "Critical", "age": "50 days old", "title": "supervisorctl restarts docker containers", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Matthew Mosesohn", "has_tags": false, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.0\" alt=\"milestone 5.0\" title=\"Linked to milestone 5.0\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1319076, "last_updated": "on 2014-05-26", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.0", "tags": [], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1319076"}, {"bugtarget": "Designate", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Kiall Mac Innes", "importance": "Critical", "age": "50 days old", "title": "DevStack docs point to moniker-dns github repo", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Kiall Mac Innes", "has_tags": false, "badges": "\u003ca href=\"https://launchpad.net/designate/+milestone/juno-1\" alt=\"milestone juno-1\" title=\"Linked to milestone juno-1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1319139, "last_updated": "on 2014-05-28", "status_class": "statusFIXCOMMITTED", "milestone_name": "Designate juno-1", "tags": [], "bug_url": "https://bugs.launchpad.net/designate/+bug/1319139"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Mike Scherbakov", "importance": "Critical", "age": "49 days old", "title": "Reduce time of bootstrapping of master node", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Matthew Mosesohn", "has_tags": false, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.1\" alt=\"milestone 5.1\" title=\"Linked to milestone 5.1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1319344, "last_updated": "on 2014-06-17", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.1", "tags": [], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1319344"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Aleksandr Didenko", "importance": "Critical", "age": "49 days old", "title": "Wrong interface in dnsmasq.conf inside cobbler container", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Matthew Mosesohn", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.0\" alt=\"milestone 5.0\" title=\"Linked to milestone 5.0\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1319412, "last_updated": "on 2014-05-14", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.0", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=docker", "tag": "docker"}], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1319412"}, {"bugtarget": "OpenStack Compute (nova)", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Ryan Hsu", "importance": "Critical", "age": "43 days old", "title": "VMware: Ports are not cleaned up after reschedule", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Gary Kotton", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/nova/+milestone/juno-2\" alt=\"milestone juno-2\" title=\"Linked to milestone juno-2\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1321381, "last_updated": "on 2014-06-18", "status_class": "statusFIXCOMMITTED", "milestone_name": "OpenStack Compute (nova) juno-2", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=havana-backport-potential", "tag": "havana-backport-potential"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=icehouse-backport-potential", "tag": "icehouse-backport-potential"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=in-stable-havana", "tag": "in-stable-havana"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=in-stable-icehouse", "tag": "in-stable-icehouse"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=vmware", "tag": "vmware"}], "bug_url": "https://bugs.launchpad.net/nova/+bug/1321381"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Nastya Urlapova", "importance": "Critical", "age": "43 days old", "title": "Deploy HA with Nova on primary controller failed", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Vladimir Kuklin", "has_tags": false, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.0.1\" alt=\"milestone 5.0.1\" title=\"Linked to milestone 5.0.1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1321662, "last_updated": "on 2014-06-26", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.0.1", "tags": [], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1321662"}, {"bugtarget": "Cinder", "status": "In Progress", "bugtarget_css": "sprite product", "reporter": "Wang Peter", "importance": "Critical", "age": "42 days old", "title": "fc auto zoning did not work when create volume from image", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e18\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Walt Boring", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/cinder/+milestone/juno-2\" alt=\"milestone juno-2\" title=\"Linked to milestone juno-2\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1321798, "last_updated": "on 2014-06-12", "status_class": "statusINPROGRESS", "milestone_name": "Cinder juno-2", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=brocade", "tag": "brocade"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=driver", "tag": "driver"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=zonemanager", "tag": "zonemanager"}], "bug_url": "https://bugs.launchpad.net/cinder/+bug/1321798"}, {"bugtarget": "Designate", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Kiall Mac Innes", "importance": "Critical", "age": "42 days old", "title": "Indeterminate gate failure \"KeyError: 'id'\" in NeutronFloatingHandlerTest", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e8\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Kiall Mac Innes", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/designate/+milestone/juno-1\" alt=\"milestone juno-1\" title=\"Linked to milestone juno-1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1321873, "last_updated": "on 2014-06-02", "status_class": "statusFIXCOMMITTED", "milestone_name": "Designate juno-1", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=ci", "tag": "ci"}], "bug_url": "https://bugs.launchpad.net/designate/+bug/1321873"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Tatyana", "importance": "Critical", "age": "41 days old", "title": "Openstack cluster do not work after failover  of  primary controller", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e14\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Vladimir Kuklin", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.0\" alt=\"milestone 5.0\" title=\"Linked to milestone 5.0\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1322259, "last_updated": "on 2014-06-04", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.0", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=ha", "tag": "ha"}], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1322259"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Jesse Pretorius", "importance": "Critical", "age": "41 days old", "title": "Unsupported hardware message blocks Fuel install", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Dmitry Ilyin", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.0\" alt=\"milestone 5.0\" title=\"Linked to milestone 5.0\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1322502, "last_updated": "on 2014-05-27", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.0", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=customer-found", "tag": "customer-found"}], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1322502"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Dmitry Teselkin", "importance": "Critical", "age": "42 days old", "title": "Message ID missed in execution result during AD deployment", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Dmitry Teselkin", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.0\" alt=\"milestone 5.0\" title=\"Linked to milestone 5.0\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1322078, "last_updated": "on 2014-05-27", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.0", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=murano", "tag": "murano"}], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1322078"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Mike Scherbakov", "importance": "Critical", "age": "38 days old", "title": "Create template specs for Fuel", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Vladimir Kozhukalov", "has_tags": false, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.1\" alt=\"milestone 5.1\" title=\"Linked to milestone 5.1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1323158, "last_updated": "on 2014-05-26", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.1", "tags": [], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1323158"}, {"bugtarget": "Fuel for OpenStack", "status": "Confirmed", "bugtarget_css": "sprite product", "reporter": "Egor Kotko", "importance": "Critical", "age": "37 days old", "title": "vip__management recovered with error", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e22\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Aleksandr Didenko", "has_tags": true, "badges": "\u003cspan alt=\"blueprint\" title=\"Related to a blueprint\" class=\"sprite blueprint\"\u003e\u003c/span\u003e \u003ca href=\"https://launchpad.net/fuel/+milestone/5.1\" alt=\"milestone 5.1\" title=\"Linked to milestone 5.1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1323277, "last_updated": "on 2014-07-01", "status_class": "statusCONFIRMED", "milestone_name": "Fuel for OpenStack 5.1", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=ha", "tag": "ha"}], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1323277"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Vitaly Kramskikh", "importance": "Critical", "age": "37 days old", "title": "./manage.py dropdb doesn't work in case of changed schema", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Nikolay Markov", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.1\" alt=\"milestone 5.1\" title=\"Linked to milestone 5.1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1323350, "last_updated": "on 2014-06-11", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.1", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=fuel-ci", "tag": "fuel-ci"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=nailgun", "tag": "nailgun"}], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1323350"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Vladimir Kuklin", "importance": "Critical", "age": "37 days old", "title": "bootstrap image is missing some firmware files ", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e36\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Dmitry Burmistrov", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.0.1\" alt=\"milestone 5.0.1\" title=\"Linked to milestone 5.0.1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1323354, "last_updated": "10 hours ago", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.0.1", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=customer-found", "tag": "customer-found"}], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1323354"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Vladimir Kuklin", "importance": "Critical", "age": "37 days old", "title": "document how to use bootstrap image with 2.6.32 kernel", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Matthew Mosesohn", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.0\" alt=\"milestone 5.0\" title=\"Linked to milestone 5.0\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1323355, "last_updated": "on 2014-05-27", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.0", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=docs", "tag": "docs"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=release-notes", "tag": "release-notes"}], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1323355"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Mike Scherbakov", "importance": "Critical", "age": "37 days old", "title": "OSTF provides wrong failure message for ping probes", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e8\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Fuel Python Team", "has_tags": false, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.0\" alt=\"milestone 5.0\" title=\"Linked to milestone 5.0\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1323433, "last_updated": "21 hours ago", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.0", "tags": [], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1323433"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Mike Scherbakov", "importance": "Critical", "age": "37 days old", "title": "Diagnostic snapshot missing many log files", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e8\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Igor Kalnitsky", "has_tags": false, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.0\" alt=\"milestone 5.0\" title=\"Linked to milestone 5.0\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1323436, "last_updated": "on 2014-06-26", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.0", "tags": [], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1323436"}, {"bugtarget": "openstack-manuals", "status": "Confirmed", "bugtarget_css": "sprite product", "reporter": "Tom Fifield", "importance": "Critical", "age": "77 days old", "title": "trove-conductor needs packaging", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e24\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": null, "has_tags": false, "badges": "\u003cspan alt=\"branch\" title=\"Branch exists\" class=\"sprite branch\"\u003e\u003c/span\u003e \u003ca href=\"https://launchpad.net/openstack-manuals/+milestone/juno\" alt=\"milestone juno\" title=\"Linked to milestone juno\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1308523, "last_updated": "on 2014-06-27", "status_class": "statusCONFIRMED", "milestone_name": "openstack-manuals juno", "tags": [], "bug_url": "https://bugs.launchpad.net/openstack-manuals/+bug/1308523"}, {"bugtarget": "Fuel for OpenStack", "status": "Confirmed", "bugtarget_css": "sprite product", "reporter": "Aleksandra Fedorova", "importance": "Critical", "age": "35 days old", "title": "[smoke] master iso smoke test failed with anaconda error", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e10\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "MOS Linux", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.1\" alt=\"milestone 5.1\" title=\"Linked to milestone 5.1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1324297, "last_updated": "23 hours ago", "status_class": "statusCONFIRMED", "milestone_name": "Fuel for OpenStack 5.1", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=mos-linux", "tag": "mos-linux"}], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1324297"}, {"bugtarget": "Keystone", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Steven Hardy", "importance": "Critical", "age": "34 days old", "title": "[OSSA 2014-018] Trust scope can be circumvented by chaining trusts (CVE-2014-3476)", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e266\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Adam Young", "has_tags": false, "badges": "\u003cspan alt=\"haspatch\" title=\"Has a patch\" class=\"sprite haspatch-icon\"\u003e\u003c/span\u003e", "information_type": "Public Security", "id": 1324592, "last_updated": "on 2014-06-16", "status_class": "statusFIXCOMMITTED", "milestone_name": null, "tags": [], "bug_url": "https://bugs.launchpad.net/keystone/+bug/1324592"}, {"bugtarget": "Blazar", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Sylvain Bauza", "importance": "Critical", "age": "33 days old", "title": "Fix tests gates failing due to keystone client 0.9.0", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Sylvain Bauza", "has_tags": false, "badges": "", "information_type": "Public", "id": 1324903, "last_updated": "on 2014-05-30", "status_class": "statusFIXCOMMITTED", "milestone_name": null, "tags": [], "bug_url": "https://bugs.launchpad.net/blazar/+bug/1324903"}, {"bugtarget": "Fuel for OpenStack", "status": "In Progress", "bugtarget_css": "sprite product", "reporter": "Michael Semenov", "importance": "Critical", "age": "33 days old", "title": "qemu vulnerabilities (CVE-2014-0150, CVE-2014-2894)", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e256\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "MOS Linux", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.1\" alt=\"milestone 5.1\" title=\"Linked to milestone 5.1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public Security", "id": 1324927, "last_updated": "13 hours ago", "status_class": "statusINPROGRESS", "milestone_name": "Fuel for OpenStack 5.1", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=mos-linux", "tag": "mos-linux"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=qemu", "tag": "qemu"}], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1324927"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Nastya Urlapova", "importance": "Critical", "age": "31 days old", "title": "Verification failed. Error occurred while running method 'verify_networks'", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Dmitry Burmistrov", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.0.1\" alt=\"milestone 5.0.1\" title=\"Linked to milestone 5.0.1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1325347, "last_updated": "on 2014-06-25", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.0.1", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=netverify", "tag": "netverify"}], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1325347"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Nikolay Markov", "importance": "Critical", "age": "30 days old", "title": "SQLAlchemy and Alembic packages with new versions needed", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Sergey Otpuschennikov", "has_tags": false, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.1\" alt=\"milestone 5.1\" title=\"Linked to milestone 5.1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1325537, "last_updated": "2 hours ago", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.1", "tags": [], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1325537"}, {"bugtarget": "Fuel for OpenStack", "status": "Confirmed", "bugtarget_css": "sprite product", "reporter": "Tatyana", "importance": "Critical", "age": "29 days old", "title": "[system tests] Snapshot was not created for test in error state", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Fuel QA Team", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.1\" alt=\"milestone 5.1\" title=\"Linked to milestone 5.1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1325907, "last_updated": "on 2014-06-18", "status_class": "statusCONFIRMED", "milestone_name": "Fuel for OpenStack 5.1", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=system-tests", "tag": "system-tests"}], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1325907"}, {"bugtarget": "Blazar", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Pablo Andres Fuente", "importance": "Critical", "age": "29 days old", "title": "Keystone client fails to authorize during trust creation", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e14\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Pablo Andres Fuente", "has_tags": false, "badges": "", "information_type": "Public", "id": 1326066, "last_updated": "on 2014-06-06", "status_class": "statusFIXCOMMITTED", "milestone_name": null, "tags": [], "bug_url": "https://bugs.launchpad.net/blazar/+bug/1326066"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Miroslav Anashkin", "importance": "Critical", "age": "29 days old", "title": "Docs misguide in master node PXE address setting", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e14\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Miroslav Anashkin", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.1\" alt=\"milestone 5.1\" title=\"Linked to milestone 5.1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1326125, "last_updated": "on 2014-06-25", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.1", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=docs", "tag": "docs"}], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1326125"}, {"bugtarget": "OpenStack Compute (nova)", "status": "In Progress", "bugtarget_css": "sprite product", "reporter": "Alex Xu", "importance": "Critical", "age": "29 days old", "title": "infinitely reschedule instance when boot instance failed", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e12\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Alex Xu", "has_tags": true, "badges": "", "information_type": "Public", "id": 1326207, "last_updated": "on 2014-06-27", "status_class": "statusINPROGRESS", "milestone_name": null, "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=icehouse-rc-potential", "tag": "icehouse-rc-potential"}], "bug_url": "https://bugs.launchpad.net/nova/+bug/1326207"}, {"bugtarget": "murano", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Anastasia Kuznetsova", "importance": "Critical", "age": "28 days old", "title": "[python-muranoclient] Get method doen't return information about specific app", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e10\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Steve McLellan", "has_tags": false, "badges": "\u003ca href=\"https://launchpad.net/murano/+milestone/juno-2\" alt=\"milestone juno-2\" title=\"Linked to milestone juno-2\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1326382, "last_updated": "on 2014-06-17", "status_class": "statusFIXCOMMITTED", "milestone_name": "murano juno-2", "tags": [], "bug_url": "https://bugs.launchpad.net/murano/+bug/1326382"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Andrey Grebennikov", "importance": "Critical", "age": "27 days old", "title": "Fuel uses interface Docker0 for PXE", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e8\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Matthew Mosesohn", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.1\" alt=\"milestone 5.1\" title=\"Linked to milestone 5.1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1327009, "last_updated": "on 2014-06-30", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.1", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=customer-found", "tag": "customer-found"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=fuelmenu", "tag": "fuelmenu"}], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1327009"}, {"bugtarget": "murano", "status": "In Progress", "bugtarget_css": "sprite product", "reporter": "Sergey Murashov", "importance": "Critical", "age": "26 days old", "title": "Data base exception", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e10\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Ruslan Kamaldinov", "has_tags": false, "badges": "\u003ca href=\"https://launchpad.net/murano/+milestone/juno-2\" alt=\"milestone juno-2\" title=\"Linked to milestone juno-2\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1327132, "last_updated": "on 2014-06-12", "status_class": "statusINPROGRESS", "milestone_name": "murano juno-2", "tags": [], "bug_url": "https://bugs.launchpad.net/murano/+bug/1327132"}, {"bugtarget": "OpenStack Compute (nova)", "status": "New", "bugtarget_css": "sprite product", "reporter": "Ihar Hrachyshka", "importance": "Critical", "age": "97 days old", "title": "SSHTimeout in tempest scenario tests using nova-network", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e82\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": null, "has_tags": true, "badges": "", "information_type": "Public", "id": 1298472, "last_updated": "5 hours ago", "status_class": "statusNEW", "milestone_name": null, "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=gate-failure", "tag": "gate-failure"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=nova-network", "tag": "nova-network"}, {"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=testing", "tag": "testing"}], "bug_url": "https://bugs.launchpad.net/nova/+bug/1298472"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Frank J. Cameron", "importance": "Critical", "age": "23 days old", "title": "'NodeBondInterface' object has no attribute 'ip_addr'", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Dima Shulyak", "has_tags": false, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.1\" alt=\"milestone 5.1\" title=\"Linked to milestone 5.1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1328163, "last_updated": "on 2014-06-26", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.1", "tags": [], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1328163"}, {"bugtarget": "Fuel for OpenStack", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Evgeny Kozhemyakin", "importance": "Critical", "age": "23 days old", "title": "Nailgun hangs fuel", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e24\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Dima Shulyak", "has_tags": true, "badges": "\u003ca href=\"https://launchpad.net/fuel/+milestone/5.1\" alt=\"milestone 5.1\" title=\"Linked to milestone 5.1\" class=\"sprite milestone\"\u003e\u003c/a\u003e", "information_type": "Public", "id": 1328200, "last_updated": "on 2014-06-25", "status_class": "statusFIXCOMMITTED", "milestone_name": "Fuel for OpenStack 5.1", "tags": [{"url": "https://bugs.launchpad.net/openstack/+bugs/?field.tag=customer-found", "tag": "customer-found"}], "bug_url": "https://bugs.launchpad.net/fuel/+bug/1328200"}, {"bugtarget": "Keystone", "status": "Fix Committed", "bugtarget_css": "sprite product", "reporter": "Adam Young", "importance": "Critical", "age": "23 days old", "title": "Cannot fetch Certs with Compressed token provider", "bug_heat_html": "\u003cspan class=\"sprite flame\"\u003e6\u003c/span\u003e", "importance_class": "importanceCRITICAL", "assignee": "Adam Young", "has_tags": false, "badges": "", "information_type": "Public", "id": 1328201, "last_updated": "on 2014-06-16", "status_class": "statusFIXCOMMITTED", "milestone_name": null, "tags": [], "bug_url": "https://bugs.launchpad.net/keystone/+bug/1328201"}]}, "next": {"start": 75, "memo": "75"}, "administratedTeams": [], "view_name": "+bugs", "importances": ["Unknown", "Undecided", "Critical", "High", "Medium", "Low", "Wishlist"], "context": {"web_link": "https://launchpad.net/openstack", "official_bug_tags": ["accessibility", "agent", "api", "astute", "autogenerate-config-docs", "aws-parity", "backend", "backports-4.1.1", "backup-service", "baremetal", "bigswitch", "bind", "block-storage", "blocking", "brocade", "bug", "ceilometer", "cells", "central", "ceph", "cinder", "cisco", "cli", "cli-reference", "collector", "common", "compute", "conductor", "config-reference", "console", "core", "customer-found", "dashboard", "database", "db", "db-api-review", "devops", "devstack-gate", "doc-builds", "doc-tools", "docker", "docs", "documentation", "driver", "driver-cert", "dynect", "ec2", "effort-l", "effort-m", "effort-s", "effort-xl", "elastic-recheck", "embrane", "engine.heat", "essex", "extra.elements", "feature-gap", "federation", "fibrechannel", "folsom", "folsom-backport-potential", "fuel-ci", "fuelci", "fuelmenu", "fwaas", "gate-failure", "gerrit", "gerritbot", "glance", "grizzly", "grizzly-backport-potential", "grizzly-rc-potential", "ha-guide", "havana", "havana-backport-potential", "heat", "hwrequest", "hyper-v", "i18n", "ibm", "icehouse", "icehouse-backport-potential", "icehouse-rc-potential", "identity", "ie", "image", "in-stable-havana", "in-stable-icehouse", "install-guide", "ipmi", "ipv6", "iso", "jeepyb", "jenkins", "jjb", "l2-pop", "l3-ipam-dhcp", "lb", "lbaas", "ldap", "library", "libvirt", "linuxbridge", "loadimpact", "lockutils-api-review", "logstash", "low-hanging-fruit", "lxc", "make", "meetbot", "mellanox", "meta", "metaplugin", "mgm", "midonet", "ml2", "murano", "nailgun", "nec", "network", "neutron", "neutron-core", "nicira", "notification", "nova", "nova-driver", "nova-manage", "nsd4", "object-storage", "odsreg", "opendaylight", "openflowagent", "ops", "ops-database", "ops-guide", "ops-messaging", "orchestration", "oslo", "oslosphinx", "oslotest", "ostf", "ovs", "performance", "plugin.hdp", "plugin.vanilla", "plumgrid", "pollster", "postgresql", "powerdns", "powervm", "puppet", "pxe", "pypi-mirror", "quantum", "radware", "release-notes", "rootwrap", "ryu", "savanna", "scheduler", "sec-guide", "security", "seed", "service-infrastructure", "sg-fw", "sink", "sql", "stacktrace", "stevedore", "storage", "summit", "summit-requested-features", "swift", "system-tests", "telemetry", "test-needed", "testing", "testr", "topology-view", "training", "transifex", "ui", "unified-objects", "unittest", "user-experience", "ux", "vcenter", "verified", "vmware", "volume", "volumes", "vpnaas", "worker", "xenserver", "zmq", "zonemanager", "zuul"], "active_milestones_collection_link": "https://bugs.launchpad.net/api/devel/openstack/active_milestones", "all_specifications_collection_link": "https://bugs.launchpad.net/api/devel/openstack/all_specifications", "all_milestones_collection_link": "https://bugs.launchpad.net/api/devel/openstack/all_milestones", "bug_reported_acknowledgement": null, "display_name": "OpenStack", "wiki_url": "http://wiki.openstack.org/", "title": "OpenStack", "homepage_url": "http://openstack.org/", "http_etag": "\"a8aa4cc32ea2d4dba555c25d3ff28375e9ec69ac-3dd19eb1887a1c0ad15aabe3e93447f4eb842bde\"", "self_link": "https://bugs.launchpad.net/api/devel/openstack", "resource_type_link": "https://bugs.launchpad.net/api/devel/#project_group", "translations_usage": "Launchpad", "description": "Website - http://openstack.org\nWiki - http://wiki.openstack.org\nBlogs - http://planet.openstack.org/\nMailing list - \u003cemail address hidden\u003e - see https://lists.openstack.org/cgi-bin/mailman/listinfo/openstack to join.\nCode Review - https://review.openstack.org/\nIRC - #openstack on freenode.net\nDocumentation - http://docs.openstack.org", "translationpermission": "Closed", "valid_specifications_collection_link": "https://bugs.launchpad.net/api/devel/openstack/valid_specifications", "projects_collection_link": "https://bugs.launchpad.net/api/devel/openstack/projects", "sourceforge_project": null, "bug_reporting_guidelines": null, "active": true, "reviewed": false, "bug_tracker_link": null, "name": "openstack", "freshmeat_project": null, "driver_link": null, "registrant_link": "https://bugs.launchpad.net/api/devel/~mordred", "summary": "The OpenStack Open Source Cloud Mission: to produce the ubiquitous Open Source Cloud Computing platform that will meet the needs of public and private clouds regardless of size, by being simple to implement and massively scalable.", "mugshot_link": "https://bugs.launchpad.net/api/devel/openstack/mugshot", "logo_link": "https://bugs.launchpad.net/api/devel/openstack/logo", "owner_link": "https://bugs.launchpad.net/api/devel/~openstack-admins", "translationgroup_link": null, "date_created": "2010-07-06T18:45:39.003249+00:00", "homepage_content": null, "icon_link": "https://bugs.launchpad.net/api/devel/openstack/icon"}, "cbl_cookie_name": "anon-buglist-fields", "prev": null, "information_types": ["Public", "Public Security", "Private Security", "Private", "Proprietary", "Embargoed"], "sort_keys": [["importance", "Importance", "desc"], ["status", "Status", "asc"], ["information_type", "Information Type", "asc"], ["id", "Number", "desc"], ["title", "Title", "asc"], ["targetname", "Package/Project/Series name", "asc"], ["milestone_name", "Milestone", "asc"], ["date_last_updated", "Date last updated", "desc"], ["assignee", "Assignee", "asc"], ["reporter", "Reporter", "asc"], ["datecreated", "Age", "desc"], ["tag", "Tags", "asc"], ["heat", "Heat", "desc"], ["date_closed", "Date closed", "desc"], ["dateassigned", "Date when the bug task was assigned", "desc"], ["number_of_duplicates", "Number of duplicates", "desc"], ["latest_patch_uploaded", "Date latest patch uploaded", "desc"], ["message_count", "Number of comments", "desc"], ["milestone", "Milestone ID", "desc"], ["specification", "Linked blueprint", "asc"], ["task", "Bug task ID", "desc"], ["users_affected_count", "Number of affected users", "desc"]], "total": 8505, "field_visibility_defaults": {"show_id": true, "show_information_type": false, "show_tag": false, "show_reporter": false, "show_targetname": true, "show_assignee": false, "show_date_last_updated": false, "show_datecreated": false, "show_importance": true, "show_heat": true, "show_milestone_name": false, "show_status": true}, "statuses": ["New", "Incomplete", "Opinion", "Invalid", "Won't Fix", "Expired", "Confirmed", "Triaged", "In Progress", "Fix Committed", "Fix Released", "Unknown"]};</script>
+
+    
+  
+
+    
+  </body>
+
+
+  <!--
+    Facet name: bugs
+    Page type: main_side
+    Has global search: True
+    Has application tabs: True
+    Has side portlets: True
+
+    At least 24 queries/external actions issued in 1.15 seconds
+
+    Features: {'app.mainsite_only.canonical_url': None, 'js.yui_version': None, 'hard_timeout': u'5000', 'profiling.enabled': None, 'visible_render_time': None, 'baselayout.careers_link.disabled': None, 'ajax.batch_navigator.enabled': None, 'bugs.dynamic_bug_listings.pre_fetch': None}
+
+    r17082
+
+    -->
+
+</html>
+
