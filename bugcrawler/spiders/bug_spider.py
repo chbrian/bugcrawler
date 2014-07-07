@@ -13,7 +13,7 @@ class BugSpider(CrawlSpider):
     ]
 
     rules = (
-        Rule(LinkExtractor(allow=("/[0-9]+"), ),
+        Rule(LinkExtractor(allow=("/\+bug/[0-9]+"), ),
              callback='parse_item', follow=True),
     )
 
