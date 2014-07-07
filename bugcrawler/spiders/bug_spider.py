@@ -13,7 +13,7 @@ class BugSpider(CrawlSpider):
     ]
 
     rules = (
-        Rule(LinkExtractor(allow=('https://bugs.launchpad.net/[a-z]*/+bug/[0-9]+'), ),
+        Rule(LinkExtractor(allow=('bugs.launchpad.net/[a-z]*/+bug/[0-9]+'), ),
              callback='parse_item', follow=True),
     )
 
