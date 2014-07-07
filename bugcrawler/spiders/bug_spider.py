@@ -13,7 +13,7 @@ class BugSpider(scrapy.Spider):
 
     rules = (
         Rule(LinkExtractor(allow=('https://bugs.launchpad.net/[a-z]*/+bug/[0-9]+'), ),
-             callback=None, follow=True),
+             callback='parse_item', follow=True),
     )
 
     def parse_item(self, response):
