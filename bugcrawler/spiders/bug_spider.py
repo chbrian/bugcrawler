@@ -4,7 +4,8 @@ from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
 from scrapy.selector import HtmlXPathSelector
 
-class BugSpider(scrapy.Spider):
+
+class BugSpider(scrapy.CrawlSpider):
     name = "bug_crawler"
     allowed_domains = ["launchpad.net"]
     start_urls = [
@@ -13,7 +14,7 @@ class BugSpider(scrapy.Spider):
 
     rules = (
         Rule(LinkExtractor(allow=('https://bugs.launchpad.net/[a-z]*/+bug/[0-9]+'), ),
-             callback='parse_item', follow=True),
+             callback=None, follow=True),
     )
 
     def parse_item(self, response):
