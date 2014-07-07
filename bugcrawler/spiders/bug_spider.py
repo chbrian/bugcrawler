@@ -5,7 +5,7 @@ from scrapy.contrib.linkextractors import LinkExtractor
 from scrapy.selector import HtmlXPathSelector
 
 
-class BugSpider(scrapy.CrawlSpider):
+class BugSpider(CrawlSpider):
     name = "bug_crawler"
     allowed_domains = ["launchpad.net"]
     start_urls = [
