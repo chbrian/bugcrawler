@@ -6,6 +6,7 @@ from scrapy.selector import HtmlXPathSelector
 from scrapy import log
 
 class BugSpider(CrawlSpider):
+
     name = "bug_crawler"
     allowed_domains = ["launchpad.net"]
     start_urls = [
@@ -13,12 +14,12 @@ class BugSpider(CrawlSpider):
     ]
 
     rules = (
-        Rule(LinkExtractor(allow=("/\+bug/[0-9]+"), ),
+        Rule(LinkExtractor(allow=("/\+bug/\d+"), ),
              callback='parse_item', follow=True),
     )
 
     def parse_item(self, response):
-        log.msg('Hi, this is an item page! %s' % response.url, level=log.DEBUG)
+        #log.msg('Hi, this is an item page! %s' % response.url, level=log.DEBUG)
         hxs = HtmlXPathSelector(response)
         if response.url:
             item = items.BugcrawlerItem()
