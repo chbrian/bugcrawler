@@ -13,7 +13,7 @@ class BugcrawlerItem(scrapy.Item):
     # name = scrapy.Field()
     title = scrapy.Field()
     link = scrapy.Field()
-    desc = scrapy.Field()
+    id =scrapy.Field()
     importance = scrapy.Field()
     status = scrapy.Field()
     milestone = scrapy.Field()
