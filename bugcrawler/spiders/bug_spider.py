@@ -14,6 +14,8 @@ class BugSpider(scrapy.Spider):
         Rule(LinkExtractor(allow=('https://bugs.launchpad.net/[a-z]*/+bug/[0-9]+')), callback=None, follow=True)
     )
 
+    """
+
     def parse_item(self, response):
         self.log('Hi, this is an item page! %s' % response.url)
 
@@ -22,3 +24,4 @@ class BugSpider(scrapy.Spider):
         item['name'] = response.xpath('//td[@id="item_name"]/text()').extract()
         item['description'] = response.xpath('//td[@id="item_description"]/text()').extract()
         return item
+    """
