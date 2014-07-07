@@ -14,7 +14,7 @@ class BugSpider(CrawlSpider):
     ]
 
     rules = (
-        Rule(LinkExtractor(allow=("/\+bug/\d+"), ),
+        Rule(LinkExtractor(allow=("/\+bug/\d+$"), ),
              callback='parse_item', follow=True),
     )
 
