@@ -8,12 +8,15 @@
 import scrapy
 
 
-class BugcrawlerItem(scrapy.Item):
+class BugCrawlerItem(scrapy.Item):
     # define the fields for your item here like:
-    # name = scrapy.Field()
+
     title = scrapy.Field()
     link = scrapy.Field()
-    id =scrapy.Field()
+    id = scrapy.Field()
     importance = scrapy.Field()
+    affects = scrapy.Field()
     status = scrapy.Field()
     milestone = scrapy.Field()
+    description = scrapy.Field()
+    report_time = scrapy.Field()

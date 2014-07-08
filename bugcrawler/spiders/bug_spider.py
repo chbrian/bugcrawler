@@ -1,9 +1,10 @@
 import scrapy
 import bugcrawler.items as items
+import re
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
-from scrapy.selector import HtmlXPathSelector
 from scrapy import log
+
 
 class BugSpider(CrawlSpider):
 
@@ -19,12 +20,20 @@ class BugSpider(CrawlSpider):
     )
 
     def parse_item(self, response):
-        #log.msg('Hi, this is an item page! %s' % response.url, level=log.DEBUG)
-        hxs = HtmlXPathSelector(response)
-        if response.url:
-            item = items.BugcrawlerItem()
-            item['id'] = response.xpath('//td[@id="item_id"]/text()').re(r'ID: (\d+)')
-            item['link'] = response.url
-            #item['name'] = response.xpath('//td[@id="item_name"]/text()').extract()
-            #item['description'] = response.xpath('//td[@id="item_description"]/text()').extract()
+        # log.msg('Hi, this is an item page! %s' % response.url, level=log.DEBUG)
+        # Multiple affects may cause problems
+        if "bug" in response.url:
+            item = items.BugCrawlerItem()
+            item.link = response.url
+            item.title = response.selector.xpath('//h1[@id="edit-title"]/span/text()').extract()
+            item.id = re.findall("\d+", item.link)[0]
+            description_tmp = response.selector.xpath(
+                '//div[@id="edit-description"]/div[@class="yui3-editable_text-text"]/p/text()').extract()
+            item.description = " ".join(description_tmp)
+            item.report_time = response.selector.xpath('//div[@id="registration"]/span/text()').re('[0-9\-]+')
+            item.affects = response.selector.xpath(
+                '//table[@id="affected-software"]/tbody/tr/td/span/span/a[@class="sprite product"]/text()').extract()
+            item.milestone = response.selector.xpath('//div[@class="milestone-content"]/a/text()').extract()
+            item.importance = response.selector.xpath('//div[@class="importance-content"]/span/text()').extract()
+            item.status = response.selector.xpath('//div[@class="status-content"]/a/text()').extract()
             yield item
