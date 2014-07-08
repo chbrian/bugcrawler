@@ -17,7 +17,7 @@ class BugSpider(CrawlSpider):
     rules = (
         Rule(LinkExtractor(allow=("/\+bug/\d+$"), ),
              callback='parse_item', follow=True),
-        Rule(LinkExtractor(allow="/+bugs.*$", restrict_xpaths="//a[@class='next js-action']",), follow=True)
+        Rule(LinkExtractor(allow="/\+bugs.*$", restrict_xpaths="//a[@class='next js-action']",), follow=True)
     )
 
     def parse_item(self, response):
