@@ -26,7 +26,7 @@ class BugSpider(CrawlSpider):
             item = items.BugCrawlerItem()
             item['link'] = response.url
             item['title'] = response.selector.xpath('//h1[@id="edit-title"]/span/text()').extract()
-            item['id'] = re.findall("\d+", item.link)[0]
+            item['id'] = re.findall("\d+", item['link'])[0]
             description_tmp = response.selector.xpath(
                 '//div[@id="edit-description"]/div[@class="yui3-editable_text-text"]/p/text()').extract()
             item['description']= " ".join(description_tmp)
