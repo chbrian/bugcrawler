@@ -11,16 +11,13 @@ class BugSpider(CrawlSpider):
     name = "bug_crawler"
     allowed_domains = ["launchpad.net"]
 
-    start_urls = ["https://bugs.launchpad.net/openstack"]
+    # start_urls = ["https://bugs.launchpad.net/openstack"]
 
-    """
-    real data
     start_urls = []
     d = range(0, 8800, 75)
     for i in d:
         abc = "https://bugs.launchpad.net/openstack/+bugs?orderby=-importance&memo=#&start=#"
         start_urls.append(abc.replace('#', str(i)))
-    """
     rules = (
         Rule(LinkExtractor(allow=("/\+bug/\d+$"), ),
              callback='parse_item', follow=True),
