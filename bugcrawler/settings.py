@@ -13,6 +13,9 @@ BOT_NAME = 'bugcrawler'
 SPIDER_MODULES = ['bugcrawler.spiders']
 NEWSPIDER_MODULE = 'bugcrawler.spiders'
 
+ITEM_PIPELINES = {
+    'bugcrawler.pipelines.DuplicatesPipeline': 100,
+}
 #DEPTH_LIMIT = 1
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'bugcrawler (+http://www.yourdomain.com)'
