@@ -15,6 +15,15 @@ class DuplicatesPipeline(object):
             return item
 
 
+class FormatPipeline(object):
+
+    def __init__(self):
+        pass
+
+    def process_item(self, item, BugSpider):
+        pass
+
+
 class StatusFilterPipeline(object):
 
     def __init__(self):

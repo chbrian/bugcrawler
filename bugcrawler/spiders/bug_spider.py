@@ -29,11 +29,11 @@ class BugSpider(CrawlSpider):
         # Multiple affects may cause problems
         item = items.BugCrawlerItem()
         item['link'] = response.url
-        item['id'] = re.findall("\d+", item['link'])[0]
-        item['title'] = response.selector.xpath('//h1[@id="edit-title"]/span/text()').extract()
+        item['id'] = re.findall("\d+", item['link'])[0].strip()
+        item['title'] = response.selector.xpath('//h1[@id="edit-title"]/span/text()').extract().strip()
         description_tmp = response.selector.xpath(
             '//div[@id="edit-description"]/div[@class="yui3-editable_text-text"]/p/text()').extract()
-        item['description']= " ".join(description_tmp)
+        item['description'] = " ".join(description_tmp)
         item['report_time'] = response.selector.xpath('//div[@id="registration"]/span/text()').re('[0-9\-]+')
         item['affects'] = response.selector.xpath(
             '//table[@id="affected-software"]/tbody/tr/td/span/span/a[@class="sprite product"]/text()').extract()
