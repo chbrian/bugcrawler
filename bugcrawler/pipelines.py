@@ -25,7 +25,7 @@ class FormatPipeline(object):
             if type(item[field]) == str:
                 item[field] = item[field].strip()
             elif type(item[field]) == list:
-                item[field] = [i.strip() for i in item[field]]
+                item[field] = [i.strip('\n').strip() for i in item[field]]
             else:
                 pass
         return item
@@ -37,7 +37,7 @@ class StatusFilterPipeline(object):
         self.invalid_status_list = ['New', 'Incomplete', 'Invalid']
 
     def process_item(self, item, BugSpider):
-        if item['status'] in self.invalid_status_list:
-            raise DropItem("Invalid Bug : %s status is %s" % (item['title'], item['status']))
-        else:
-            return item
+        for i in item['status']:
+            if i not in self.invalid_status_list:
+                return item
+        raise DropItem("Invalid status of %s" % item['title'])
