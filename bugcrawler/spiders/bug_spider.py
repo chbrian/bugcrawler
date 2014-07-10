@@ -17,7 +17,7 @@ class BugSpider(CrawlSpider):
     rules = (
         Rule(LinkExtractor(allow=("/\+bug/\d+$"), ),
              callback='parse_item', follow=True),
-        Rule(LinkExtractor(restrict_xpaths="//a[@class='next js-action' and contains /strong[]",), follow=True),
+        Rule(LinkExtractor(restrict_xpaths="//a[@class='next js-action' and contains(strong,'Next')",), follow=True),
         #Rule(LinkExtractor(allow=("/\+bugs\?orderby=-importance&memo=\d+&start=\d+$"), ),
         #     follow=True)
     )
@@ -38,6 +38,6 @@ class BugSpider(CrawlSpider):
                 '//table[@id="affected-software"]/tbody/tr/td/span/span/a[@class="sprite product"]/text()').extract()
             item['milestone'] = response.selector.xpath('//div[@class="milestone-content"]/a/text()').extract()
             item['importance'] = response.selector.xpath('//div[@class="importance-content"]/span/text()').extract()
-            item['status']= response.selector.xpath\
-                ('//div[@class="status-content"]/a[contains(@class,"status")]/text()').extract()
+            item['status']= response.selector.xpath(
+                '//div[@class="status-content"]/a[contains(@class,"status")]/text()').extract()
             yield item
