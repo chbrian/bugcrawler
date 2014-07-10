@@ -31,8 +31,7 @@ class BugSpider(CrawlSpider):
         # Multiple affects may cause problems
         if "bug" in response.url:
             if response.url in self.url_list:
-               log.msg("this is a duplicate page!  %s ." % response.url, level=log.DEBUG)
-
+                log.msg("this is a duplicate page!  %s ." % response.url, level=log.INFO)
         else:
             self.url_list.append(response.url)
             item = items.BugCrawlerItem()
