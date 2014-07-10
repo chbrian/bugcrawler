@@ -22,7 +22,7 @@ class FormatPipeline(object):
 
     def process_item(self, item, BugSpider):
         for field in item:
-            field = [i.strip('\n').strip() for i in field]
+            item['field'] = [i.strip('\n').strip() for i in item['field']]
         return item
 
 
