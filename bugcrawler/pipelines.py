@@ -21,7 +21,9 @@ class FormatPipeline(object):
         pass
 
     def process_item(self, item, BugSpider):
-        pass
+        for field in item:
+            field = [i.strip() for i in field]
+        return item
 
 
 class StatusFilterPipeline(object):

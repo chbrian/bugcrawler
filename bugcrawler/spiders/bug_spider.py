@@ -34,8 +34,8 @@ class BugSpider(CrawlSpider):
         # Multiple affects may cause problems
         item = items.BugCrawlerItem()
         item['link'] = response.url
-        item['id'] = re.findall("\d+", item['link'])[0].strip()
-        item['title'] = response.selector.xpath('//h1[@id="edit-title"]/span/text()').extract().strip()
+        item['id'] = re.findall("\d+", item['link'])[0]
+        item['title'] = response.selector.xpath('//h1[@id="edit-title"]/span/text()').extract()
         description_tmp = response.selector.xpath(
             '//div[@id="edit-description"]/div[@class="yui3-editable_text-text"]/p/text()').extract()
         item['description'] = " ".join(description_tmp)
