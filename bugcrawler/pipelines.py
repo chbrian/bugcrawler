@@ -22,7 +22,12 @@ class FormatPipeline(object):
 
     def process_item(self, item, BugSpider):
         for field in item:
-            item[field] = [i.strip('\n').strip() for i in item[field]]
+            if type(item[field]) == str:
+                item[field] = item[field].strip()
+            elif type(item[field]) == list:
+                item[field] = [i.strip.strip() for i in item[field]]
+            else:
+                pass
         return item
 
 
