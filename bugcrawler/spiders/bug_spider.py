@@ -17,7 +17,7 @@ class BugSpider(CrawlSpider):
     rules = (
         Rule(LinkExtractor(allow=("/\+bug/\d+$"), ),
              callback='parse_item', follow=True),
-        Rule(LinkExtractor(restrict_xpaths="//a[@class='next js-action' and contains(strong,'Next')",), follow=True),
+        Rule(LinkExtractor(restrict_xpaths="//a[@class='next js-action' and contains(@strong, 'Next')",), follow=True),
         #Rule(LinkExtractor(allow=("/\+bugs\?orderby=-importance&memo=\d+&start=\d+$"), ),
         #     follow=True)
     )
