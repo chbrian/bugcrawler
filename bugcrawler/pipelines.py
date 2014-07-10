@@ -25,7 +25,7 @@ class FormatPipeline(object):
             if type(item[field]) == str:
                 item[field] = item[field].strip()
             elif type(item[field]) == list:
-                item[field] = [i.strip.strip() for i in item[field]]
+                item[field] = [i.strip() for i in item[field]]
             else:
                 pass
         return item
