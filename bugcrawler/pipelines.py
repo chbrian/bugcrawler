@@ -72,9 +72,9 @@ class AffectsFilterPipeline(object):
             new_status_list = []
             new_milestone_list = []
             new_importance_list = []
-            if (len_affects == len_status or len_status == 0) \
-                    and (len_affects == len_milestone or len_milestone == 0) \
-                    and (len_affects == len_importance or len_importance == 0):
+            if len_affects == len_status or len_status == 0:
+                #    and (len_affects == len_milestone or len_milestone == 0) \
+                #    and (len_affects == len_importance or len_importance == 0):
                 for i in item['affects']:
                     if i in self.valid_affect_list:
                         index = item['affects'].index(i)

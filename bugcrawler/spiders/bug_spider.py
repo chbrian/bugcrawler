@@ -21,7 +21,6 @@ class BugSpider(CrawlSpider):
         abc = "https://bugs.launchpad.net/openstack/+bugs?orderby=-importance&memo=#&start=#"
         start_urls.append(abc.replace('#', str(i)))
 
-
     rules = (
         Rule(LinkExtractor(allow=("/\+bug/\d+$"), ),
              callback='parse_item', follow=True),
