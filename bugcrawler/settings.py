@@ -16,7 +16,8 @@ NEWSPIDER_MODULE = 'bugcrawler.spiders'
 ITEM_PIPELINES = {
     'bugcrawler.pipelines.DuplicatesPipeline': 100,
     'bugcrawler.pipelines.FormatPipeline': 200,
-    'bugcrawler.pipelines.StatusFilterPipeline':300
+    'bugcrawler.pipelines.StatusFilterPipeline': 300,
+    'bugcrawler.pipelines.AffectFilterPipeline': 400
 }
 #DEPTH_LIMIT = 1
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
