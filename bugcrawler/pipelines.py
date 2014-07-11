@@ -61,12 +61,12 @@ class AffectFilterPipeline(object):
             ]
 
     def process_item(self, item, BugSpider):
-        len_affect = len(item['affect'])
+        len_affect = len(item['affects'])
         len_status = len(item['status'])
         len_milestone = len(item['milestone'])
         len_importance = len(item['importance'])
         if len_affect == 1:
-            if item['affect'][0] not in self.valid_affect_list:
+            if item['affects'][0] not in self.valid_affect_list:
                 raise DropItem("Irrelevant affect of %s" % item['title'])
         else:
             new_affect_list = []
@@ -76,17 +76,17 @@ class AffectFilterPipeline(object):
             if (len_affect == len_status or len_status == 0) \
                     and (len_affect == len_milestone or len_milestone == 0) \
                     and (len_affect == len_importance or len_importance == 0):
-                for i in item['affect']:
+                for i in item['affects']:
                         if i in self.valid_affect_list:
-                            index = item['affect'].index(i)
-                            new_affect_list.append(item['affect'][index])
+                            index = item['affects'].index(i)
+                            new_affect_list.append(item['affects'][index])
                             if not len_status == 0:
                                 new_status_list.append(item['status'][index])
                             if not len_milestone == 0:
                                 new_milestone_list.append(item['milestone'][index])
                             if not len_importance == 0:
                                 new_importance_list.append(item['importance'][index])
-                item['affect'] = new_affect_list
+                item['affects'] = new_affect_list
                 item['status'] = new_status_list
                 item['milestone'] = new_milestone_list
                 item['importance'] = new_importance_list
