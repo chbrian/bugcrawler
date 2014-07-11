@@ -35,8 +35,9 @@ class BugSpider(CrawlSpider):
         item['title'] = response.selector.xpath('//h1[@id="edit-title"]/span/text()').extract()
         description_tmp = response.selector.xpath(
             '//div[@id="edit-description"]/div[@class="yui3-editable_text-text"]/p/text()').extract()
+        description_tmp = [i.strip('/n').strip() for i in description_tmp]
         item['description'] = " ".join(description_tmp)
-        item['report_time'] = response.selector.xpath('//div[@id="registration"]/span/text()').re('[0-9\-]+')
+        item['report_time'] = response.selector.xpath('//div[@id="registration"]/span/@title').extract()
         item['affects'] = response.selector.xpath(
             '//table[@id="affected-software"]/tbody/tr/td/span/span/a[@class="sprite product"]/text()').extract()
         item['milestone'] = response.selector.xpath('//div[@class="milestone-content"]/a/text()').extract()
