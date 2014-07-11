@@ -89,5 +89,12 @@ class AffectsFilterPipeline(object):
                 item['status'] = new_status_list
                 item['milestone'] = new_milestone_list
                 item['importance'] = new_importance_list
+            else:
+                flag = 0
+                for i in item['affects']:
+                    if i in self.valid_affect_list:
+                        flag = 1
+                if flag == 0:
+                    raise DropItem("Irrelevant affect of %s" % item['title'])
 
         return item
