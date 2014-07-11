@@ -72,23 +72,27 @@ class AffectsFilterPipeline(object):
             new_status_list = []
             new_milestone_list = []
             new_importance_list = []
-            if (len_affects == len_status or len_status == 0) \
-                    and (len_affects == len_milestone or len_milestone == 0) \
-                    and (len_affects == len_importance or len_importance == 0):
+            if len_affects == len_status or len_status == 0 \
+                    and len_affects == len_milestone or len_milestone == 0 \
+                    and len_affects == len_importance or len_importance == 0:
                 for i in item['affects']:
-                        if i in self.valid_affect_list:
-                            index = item['affects'].index(i)
-                            new_affects_list.append(item['affects'][index])
-                            if not len_status == 0:
-                                new_status_list.append(item['status'][index])
-                            if not len_milestone == 0:
-                                new_milestone_list.append(item['milestone'][index])
-                            if not len_importance == 0:
-                                new_importance_list.append(item['importance'][index])
-                item['affects'] = new_affects_list
-                item['status'] = new_status_list
-                item['milestone'] = new_milestone_list
-                item['importance'] = new_importance_list
+                    if i in self.valid_affect_list:
+                        index = item['affects'].index(i)
+                        new_affects_list.append(item['affects'][index])
+                        if not len_status == 0:
+                            new_status_list.append(item['status'][index])
+                        if not len_milestone == 0:
+                            new_milestone_list.append(item['milestone'][index])
+                        if not len_importance == 0:
+                            new_importance_list.append(item['importance'][index])
+
+                if new_affects_list:
+                    raise DropItem("Irrelevant affect of %s" % item['title'])
+                else:
+                    item['affects'] = new_affects_list
+                    item['status'] = new_status_list
+                    item['milestone'] = new_milestone_list
+                    item['importance'] = new_importance_list
             else:
                 flag = 0
                 for i in item['affects']:
@@ -96,5 +100,4 @@ class AffectsFilterPipeline(object):
                         flag = 1
                 if flag == 0:
                     raise DropItem("Irrelevant affect of %s" % item['title'])
-
         return item
