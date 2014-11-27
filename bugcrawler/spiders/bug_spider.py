@@ -12,7 +12,7 @@ class BugSpider(CrawlSpider):
     allowed_domains = ["launchpad.net"]
 
     # testing url
-    start_urls = ["https://bugs.launchpad.net/openstack-ci/+bug/1010621"]
+    start_urls = ["https://bugs.launchpad.net/openstack/"]
 
     # real-case url
     """
