@@ -12,15 +12,16 @@ class BugSpider(CrawlSpider):
     allowed_domains = ["launchpad.net"]
 
     # testing url
-    #start_urls = ["https://bugs.launchpad.net/openstack"]
+    start_urls = ["https://bugs.launchpad.net/openstack-ci/+bug/1010621"]
 
     # real-case url
+    """
     start_urls = []
     d = range(0, 8800, 75)
     for i in d:
         abc = "https://bugs.launchpad.net/openstack/+bugs?orderby=-importance&memo=#&start=#"
         start_urls.append(abc.replace('#', str(i)))
-
+    """
     rules = (
         Rule(LinkExtractor(allow=("/\+bug/\d+$"), ),
              callback='parse_item', follow=True),
@@ -38,7 +39,7 @@ class BugSpider(CrawlSpider):
         item['title'] = response.selector.xpath('//h1[@id="edit-title"]/span/text()').extract()
         description_tmp = response.selector.xpath(
             '//div[@id="edit-description"]/div[@class="yui3-editable_text-text"]/p/text()').extract()
-        description_tmp = 3  #[i.strip('/n').strip() for i in description_tmp]
+        #description_tmp = 3  #[i.strip('/n').strip() for i in description_tmp]
         item['description'] = " ".join(description_tmp)
         item['report_time'] = response.selector.xpath('//div[@id="registration"]/span/@title').extract()
         item['affects'] = response.selector.xpath(
@@ -48,4 +49,6 @@ class BugSpider(CrawlSpider):
         item['importance'] = response.selector.xpath('//div[@class="importance-content"]/span/text()').extract()
         item['status']= response.selector.xpath(
             '//div[@class="status-content"]/a[contains(@class,"status")]/text()').extract()
+        item['tags'] = response.selector.xpath('//div[@id="bug-tags"]/span[@id="tag-list"]/text()').extract()
+
         yield item

@@ -19,3 +19,4 @@ class BugCrawlerItem(scrapy.Item):
     milestone = scrapy.Field()
     description = scrapy.Field()
     report_time = scrapy.Field()
+    tags = scrapy.Field()
