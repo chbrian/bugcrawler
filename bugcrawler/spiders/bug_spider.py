@@ -49,6 +49,6 @@ class BugSpider(CrawlSpider):
         item['importance'] = response.selector.xpath('//div[@class="importance-content"]/span/text()').extract()
         item['status']= response.selector.xpath(
             '//div[@class="status-content"]/a[contains(@class,"status")]/text()').extract()
-        item['tags'] = response.selector.xpath('//div[@id="bug-tags"]/span[@id="tag-list"]/text()').extract()
+        item['tags'] = response.selector.xpath('//div[@id="bug-tags"]/span[@id="tag-list"]/a/text()').extract()
 
         yield item
