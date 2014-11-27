@@ -50,6 +50,6 @@ class BugSpider(CrawlSpider):
         item['status']= response.selector.xpath(
             '//div[@class="status-content"]/a[contains(@class,"status")]/text()').extract()
         item['tags'] = response.selector.xpath('//div[@id="bug-tags"]/span[@id="tag-list"]/a/text()').extract()
-        item['timeline'] = response.selector.xpath('//table[@class="bug-activity"]/tbody/tr/td/b/text()="status"\
+        item['bug_life'] = response.selector.xpath('//table[@class="bug-activity"]/tbody/tr/td/b/text()="status"\
                                                    /sibling/text()').extract()
         yield item
