@@ -63,7 +63,7 @@ class BugSpider(CrawlSpider):
             life = bug_life_status[i]
             time_list = response.selector.xpath(
                 '//td[contains(text(), %s)]/../../../../div[1]/span/text()' % life).extract()
-            time_list = [datetime.split()[1].datetime.strptime(date, "%Y-%m-%d") for date in time_list]
+            time_list = [datetime.datetime.strptime(date.split()[1], "%Y-%m-%d") for date in time_list]
             bug_life_time_list[i] = time_list
             affect_list = response.selector.xpath(
                 '//td[contains(text(), %s)]/../../tr[1]/td/text()' % life).extract()
