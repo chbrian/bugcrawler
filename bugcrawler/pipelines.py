@@ -8,12 +8,11 @@ class DuplicatesPipeline(object):
         self.ids_seen = set()
 
     def process_item(self, item, BugSpider):
-        if item['id'] in self.ids_seen:
+        if item['bug_id'] in self.ids_seen:
             raise DropItem("Duplicate item found: %s" % item)
         else:
-            self.ids_seen.add(item['id'])
+            self.ids_seen.add(item['bug_id'])
             return item
-
 
 class FormatPipeline(object):
 

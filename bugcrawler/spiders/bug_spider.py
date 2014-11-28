@@ -1,4 +1,3 @@
-
 import bugcrawler.items as items
 import datetime
 import re
@@ -10,7 +9,7 @@ from scrapy import log
 
 class BugSpider(CrawlSpider):
 
-    name = "bug_crawler"
+    name = "bug"
     allowed_domains = ["launchpad.net"]
 
     # testing url
@@ -55,6 +54,10 @@ class BugSpider(CrawlSpider):
 
         # Processing bug life date
         # Collect bug life and its corresponding affect
+
+
+
+        """
         bug_life_status = ["Incomplete", "Confirmed", "Triaged", "In Progress", "Fix Committed", "Fix Released",
                     "Invalid", "Opinion", "Won't Fix"]
         bug_life_time_dict = {}
@@ -89,5 +92,7 @@ class BugSpider(CrawlSpider):
             bug_life_date_dict.update({status: bug_life_date})
 
         item["bug_life_date_dict"] = bug_life_date_dict
+        """
+
 
         yield item

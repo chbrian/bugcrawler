@@ -21,3 +21,11 @@ class BugCrawlerItem(scrapy.Item):
     report_time = scrapy.Field()
     tags = scrapy.Field()
     bug_life_date_dict = scrapy.Field()
+
+
+class BugActivityItem(scrapy.Item):
+
+    link = scrapy.Field()
+    bug_id = scrapy.Field()
+    bug_life = scrapy.Field()
+
