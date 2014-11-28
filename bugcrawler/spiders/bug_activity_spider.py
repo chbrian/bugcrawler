@@ -22,7 +22,7 @@ class BugActivitySpider(CrawlSpider):
         start_urls.append(abc.replace('#', str(i)))
     """
     rules = (
-        Rule(LinkExtractor(allow=("/\+bug/\d+/+activity$"), ),
+        Rule(LinkExtractor(allow=("/\+bug/\d+/\+activity$"), ),
              callback='parse_item', follow=True),
     )
 
