@@ -1,6 +1,8 @@
-import scrapy
+
 import bugcrawler.items as items
+import datetime
 import re
+import scrapy
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
 from scrapy import log
@@ -50,5 +52,38 @@ class BugSpider(CrawlSpider):
         item['status']= response.selector.xpath(
             '//div[@class="status-content"]/a[contains(@class,"status")]/text()').extract()
         item['tags'] = response.selector.xpath('//div[@id="bug-tags"]/span[@id="tag-list"]/a/text()').extract()
-        item['bug_life'] = response.selector.xpath('//table[@class="bug-activity"]/tbody/tr/td/b/text()="status"/sibling/text()').extract()
+
+        # Processing bug life date
+        # Collect bug life and its corresponding affect
+        bug_life_status = ["Incomplete", "Confirmed", "Triaged", "In Progress", "Fix Committed", "Fix Released",
+                    "Invalid", "Opinion", "Won't Fix"]
+        bug_life_time_list = []
+        bug_life_affect_list = []
+        for i in range(len(bug_life_status)):
+            life = bug_life_status[i]
+            time_list = response.selector.xpath(
+                '//td[contains(text(), %s)]/../../../../div[1]/span/text()', life).extract().split()[1]
+            time_list = [datetime.datetime.strptime(date, "%Y-%m-%d") for date in time_list]
+            bug_life_time_list[i] = time_list
+            bug_life_affect_list[i] = response.selector.xpath(
+                '//td[contains(text(), %s)]/../../tr[1]/td/text()', life).extract().split()[2][:-1]
+
+
+        # choose the minimal bug time of each life, that is the date bug changes to this status
+        bug_life_date_dict = {}
+        for i in range((len(bug_life_status))):
+            affect_set = set(bug_life_affect_list[i])
+            for affect in affect_set:
+                index_list = []
+                time_list = []
+                for j in range(len(bug_life_affect_list[i])):
+                    if affect == bug_life_affect_list[i][j]:
+                        time = bug_life_time_list[i][j]
+                        time_list.append(time)
+                time = min(time_list)
+            bug_life_date = {affect, time}
+            bug_life_date_dict.update({bug_life_status[i]: bug_life_date})
+
+        item["bug_life_date_dict"] = bug_life_date_dict
+
         yield item
