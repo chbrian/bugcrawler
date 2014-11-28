@@ -69,7 +69,7 @@ class BugSpider(CrawlSpider):
                 affect_list = response.selector.xpath(
                     '//table[@class="bug-activity"]/tr/td[contains(text(), %s)]/../../tr[1]/td/text()' % life).extract()
                 affect_list = [affect.split()[2][:-1] for affect in affect_list]
-                bug_life_affect_dict.update({affect_list: affect_list})
+                bug_life_affect_dict.update({life: affect_list})
             except:
                 log.msg("No bug life of %s in report %s." % (life, item['bug_id']), logLevel=log.DEBUG)
 
