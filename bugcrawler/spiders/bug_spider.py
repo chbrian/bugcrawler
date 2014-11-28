@@ -57,32 +57,33 @@ class BugSpider(CrawlSpider):
         # Collect bug life and its corresponding affect
         bug_life_status = ["Incomplete", "Confirmed", "Triaged", "In Progress", "Fix Committed", "Fix Released",
                     "Invalid", "Opinion", "Won't Fix"]
-        bug_life_time_list = []
-        bug_life_affect_list = []
+        bug_life_time_dict = {}
+        bug_life_affect_dict = {}
         for life in bug_life_status:
+            # xpath has a bug that path can't include tbody.
             time_list = response.selector.xpath(
                 '//table[@class="bug-activity"]/tr/td[contains(text(), %s)]/../../../../div[1]/span/text()' % life).extract()
             time_list = [datetime.datetime.strptime(date.split()[1], "%Y-%m-%d") for date in time_list]
-            bug_life_time_list.append(time_list)
+            bug_life_time_dict.update({life: time_list})
             affect_list = response.selector.xpath(
                 '//table[@class="bug-activity"]/tr/td[contains(text(), %s)]/../../tr[1]/td/text()' % life).extract()
             affect_list = [affect.split()[2][:-1] for affect in affect_list]
-            bug_life_affect_list.append(affect_list)
+            bug_life_affect_dict.update({affect_list: affect_list})
 
         # choose the minimal bug time of each life, that is the date bug changes to this status
         bug_life_date_dict = {}
-        for i in range((len(bug_life_status))):
-            affect_set = set(bug_life_affect_list[i])
+        for status in bug_life_status:
+            affect_set = set(bug_life_affect_dict.get(status))
             for affect in affect_set:
                 index_list = []
                 time_list = []
-                for j in range(len(bug_life_affect_list[i])):
-                    if affect == bug_life_affect_list[i][j]:
-                        time = bug_life_time_list[i][j]
+                for j in range(len(bug_life_affect_dict.get(status))):
+                    if affect == bug_life_affect_dict.get(status)[j]:
+                        time = bug_life_time_dict.get(status)[j]
                         time_list.append(time)
                 time = min(time_list)
             bug_life_date = {affect, time}
-            bug_life_date_dict.update({bug_life_status[i]: bug_life_date})
+            bug_life_date_dict.update({status: bug_life_date})
 
         item["bug_life_date_dict"] = bug_life_date_dict
 
