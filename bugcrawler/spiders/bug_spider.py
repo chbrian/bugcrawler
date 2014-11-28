@@ -71,14 +71,13 @@ class BugSpider(CrawlSpider):
                 affect_list = [affect.split()[2][:-1] for affect in affect_list]
                 bug_life_affect_dict.update({affect_list: affect_list})
             except:
-                log.DEBUG("No bug life of %s in report %s." % (life, item['bug_id']))
+                log.msg("No bug life of %s in report %s." % (life, item['bug_id']), logLevel=log.DEBUG)
 
         # choose the minimal bug time of each life, that is the date bug changes to this status
         bug_life_date_dict = {}
         for status in bug_life_status:
             affect_set = set(bug_life_affect_dict.get(status))
             for affect in affect_set:
-                index_list = []
                 time_list = []
                 for j in range(len(bug_life_affect_dict.get(status))):
                     if affect == bug_life_affect_dict.get(status)[j]:
