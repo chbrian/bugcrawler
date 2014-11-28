@@ -67,11 +67,12 @@ class BugSpider(CrawlSpider):
                 time_list = [datetime.datetime.strptime(date.split()[1], "%Y-%m-%d") for date in time_list]
                 bug_life_time_dict.update({life: time_list})
                 affect_list = response.selector.xpath(
-                    '//table[@class="bug-activity"]/tr/td[contains(text(), %s)]/../../tr[1]/td/text()' % life).extract()
+                    '//table[@class="bug-activity"]/tr/td[contains(text(), %s)]'
+                    '/../../tr/td[contains(text(), "Changed in")]/text()' % life).extract()
                 affect_list = [affect.split()[2][:-1] for affect in affect_list]
                 bug_life_affect_dict.update({life: affect_list})
             except:
-                log.msg("No bug life of %s in report %s." % (life, item['bug_id']), logLevel=log.DEBUG)
+                log.msg("No bug life of %s in report %s." % (life, item['bug_id']), level=log.DEBUG)
 
         # choose the minimal bug time of each life, that is the date bug changes to this status
         bug_life_date_dict = {}
