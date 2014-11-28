@@ -12,7 +12,7 @@ class BugCrawlerItem(scrapy.Item):
 
     title = scrapy.Field()
     link = scrapy.Field()
-    id = scrapy.Field()
+    bug_id = scrapy.Field()
     importance = scrapy.Field()
     affects = scrapy.Field()
     status = scrapy.Field()

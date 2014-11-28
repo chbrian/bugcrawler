@@ -37,7 +37,7 @@ class BugSpider(CrawlSpider):
         # Multiple affects may cause problems
         item = items.BugCrawlerItem()
         item['link'] = response.url
-        item['id'] = re.findall("\d+", item['link'])[0]
+        item['bug_id'] = re.findall("\d+", item['link'])[0]
         item['title'] = response.selector.xpath('//h1[@id="edit-title"]/span/text()').extract()
         description_tmp = response.selector.xpath(
             '//div[@id="edit-description"]/div[@class="yui3-editable_text-text"]/p/text()').extract()
@@ -71,7 +71,7 @@ class BugSpider(CrawlSpider):
                 affect_list = [affect.split()[2][:-1] for affect in affect_list]
                 bug_life_affect_dict.update({affect_list: affect_list})
             except:
-                log.DEBUG("No bug life of %s in report %d." % (life, item['id']))
+                log.DEBUG("No bug life of %s in report %s." % (life, item['bug_id']))
 
         # choose the minimal bug time of each life, that is the date bug changes to this status
         bug_life_date_dict = {}
