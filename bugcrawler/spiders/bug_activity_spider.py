@@ -11,8 +11,12 @@ class BugActivitySpider(CrawlSpider):
     allowed_domains = ["launchpad.net"]
 
     # testing url
-    start_urls = ["https://bugs.launchpad.net/python-cinderclient/+bug/1028684/+activity"]
+    start_urls = ["https://bugs.launchpad.net/openstack/"]
 
+    rules = (
+        Rule(LinkExtractor(allow=("/\+bug/\d+/\+activity$"), ),
+             callback='parse_item', follow=True),
+    )
 
     def parse_item(self, response):
         item = items.BugActivityItem()
