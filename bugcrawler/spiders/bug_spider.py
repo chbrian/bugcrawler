@@ -61,11 +61,11 @@ class BugSpider(CrawlSpider):
         bug_life_affect_list = []
         for life in bug_life_status:
             time_list = response.selector.xpath(
-                '//td[contains(text(), %s)]/../../../../div[1]/span/text()' % life).extract()
+                '//table[@class="bug-activity"]/tr/td[contains(text(), %s)]/../../../../div[1]/span/text()' % life).extract()
             time_list = [datetime.datetime.strptime(date.split()[1], "%Y-%m-%d") for date in time_list]
             bug_life_time_list.append(time_list)
             affect_list = response.selector.xpath(
-                '//td[contains(text(), %s)]/../../tr[1]/td/text()' % life).extract()
+                '//table[@class="bug-activity"]/tr/td[contains(text(), %s)]/../../tr[1]/td/text()' % life).extract()
             affect_list = [affect.split()[2][:-1] for affect in affect_list]
             bug_life_affect_list.append(affect_list)
 
